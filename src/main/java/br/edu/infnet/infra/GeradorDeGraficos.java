@@ -3,7 +3,6 @@ package br.edu.infnet.infra;
 import java.awt.Color;
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.text.DateFormat;
@@ -20,6 +19,7 @@ import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.axis.SegmentedTimeline;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.CandlestickRenderer;
+import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 import org.jfree.data.xy.AbstractXYDataset;
 import org.jfree.data.xy.DefaultOHLCDataset;
 import org.jfree.data.xy.OHLCDataItem;
@@ -27,9 +27,7 @@ import org.jfree.data.xy.XYDataset;
 
 public class GeradorDeGraficos {
     
-    public ByteArrayOutputStream candleStickDemo(String stockSymbol) {
-//    public void obterGraficoCandleBar(@PathVariable("sigla") String sigla, HttpServletResponse response) {
-//        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    public ByteArrayOutputStream candleStick(String stockSymbol) {
 
         DateAxis domainAxis = new DateAxis("Date");
         NumberAxis rangeAxis = new NumberAxis("Price");
@@ -48,17 +46,48 @@ public class GeradorDeGraficos {
         JFreeChart chart = new JFreeChart(stockSymbol, null, mainPlot, false);
 
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        File chartAsPng = new File("linha3.png");
         try {
-//            ChartUtilities.saveChartAsPNG(chartAsPng, chart, 500, 300); // esse metodo salva em arquivo, é preferível escrever no outputstream
+//            ChartUtilities.saveChartAsPNG(arquivo, chart, 500, 300); // esse metodo salva em arquivo, é preferível escrever no outputstream
             ChartUtilities.writeChartAsPNG(outputStream, chart, 500, 300);
-            System.out.println("[CandleStickDemo2] Salvando grafico como PNG ");
+            System.out.println("[GeradorDeGraficos.CandleStick] Grafico salvo como PNG ");
         } catch (Exception e) {
             e.printStackTrace();
         }
         return outputStream;
 
-    } // fim do candleStickDemo
+    } // fim do candleStick
+    
+    public ByteArrayOutputStream historicoPreco(String stockSymbol) {
+
+        DateAxis domainAxis = new DateAxis("Date");
+        NumberAxis rangeAxis = new NumberAxis("Price");
+        XYLineAndShapeRenderer renderer = new XYLineAndShapeRenderer();
+        System.out.println("[GeradorDeGraficos.HistoricoDePreco] configurado REDENDER para XYLineAndShapeRenderer");
+        XYDataset dataset = getDataSet(stockSymbol);
+
+        XYPlot mainPlot = new XYPlot(dataset, domainAxis, rangeAxis, renderer);
+
+        //Do some setting up, see the API Doc
+        renderer.setSeriesPaint(0, Color.BLACK);
+//        renderer.setDrawVolume(false);
+        rangeAxis.setAutoRangeIncludesZero(false);
+        domainAxis.setTimeline(SegmentedTimeline.newMondayThroughFridayTimeline());
+
+        //Now create the chart and write PNG to OutputStream
+        JFreeChart chart = new JFreeChart(stockSymbol, null, mainPlot, false);
+
+        //Escreve o grafico em um ByteArrayOutputStream para ser retornado pelo controller, via GET, para o JSP exibir a imagem
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        try {
+//            ChartUtilities.saveChartAsPNG(arquivo, chart, 500, 300); // esse metodo salva em arquivo, é preferível escrever no outputstream
+            ChartUtilities.writeChartAsPNG(outputStream, chart, 500, 300);
+            System.out.println("[GeradorDeGraficos.HistoricoDePreco] Grafico salvo como PNG ");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return outputStream;
+
+    } // fim do historicoPreco
 
     protected AbstractXYDataset getDataSet(String stockSymbol) {
         //This is the dataset we are going to create
@@ -79,11 +108,11 @@ public class GeradorDeGraficos {
     protected OHLCDataItem[] getData(String stockSymbol) {
         List<OHLCDataItem> dataItems = new ArrayList<OHLCDataItem>();
         try {
-//            String strUrl = "https://query1.finance.yahoo.com/v7/finance/download/MGLU3.SA?period1=1592061991&period2=1623597991&interval=1d&events=history&includeAdjustedClose=true";
-            String strUrl = "http://localhost:8080/ABC-HB/cotacoes/MGLU3.SA.csv";
+//            String strUrl = "http://query1.finance.yahoo.com/v7/finance/download/MGLU3.SA?period1=1592077175&period2=1623613175&interval=1d&events=history&includeAdjustedClose=true";
+            String strUrl = "http://localhost:8080/ABC-HB/cotacoes/MGLU3.SA-teste.csv";
             URL url = new URL(strUrl);
             BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()));
-            DateFormat df = new SimpleDateFormat("y-M-d");
+            DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
 
             String inputLine;
             in.readLine();

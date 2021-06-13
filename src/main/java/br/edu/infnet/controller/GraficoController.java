@@ -19,12 +19,11 @@ public class GraficoController {
 
         ModelAndView retorno = new ModelAndView("grafico/exibirGrafico");
 
-        if (sigla.equalsIgnoreCase("MGLU3")) {
-            System.out.println("[graficoController] Sigla = " + sigla);
-            System.out.println("[graficoController] Exibindo grafico");
+        if (sigla.equalsIgnoreCase("MGLU3.SA")) {
+            System.out.println("[GraficoController] Sigla = " + sigla + " correta, continuando...");
             retorno.addObject("sigla", sigla);
         } else {
-            System.out.println("[graficoController] A sigla informada \"" + sigla + "\" nao foi localizada");
+            System.out.println("[GraficoController] A sigla informada \"" + sigla + "\" nao foi localizada, retornando erro");
             retorno = new ModelAndView("index");
             retorno.addObject("erro", "A sigla informada \"" + sigla + "\" nao foi localizada");
         }
@@ -35,17 +34,15 @@ public class GraficoController {
     @GetMapping("/grafico/candlebar/{sigla}")
     public byte[] obterGraficoCandleBar(@PathVariable("sigla") String sigla) {
 
-//        ModelAndView retorno = new ModelAndView("grafico/exibirGrafico");
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 
         if (sigla.equalsIgnoreCase("MGLU3.SA")) {
-            System.out.println("[obterGraficoCandleBar] Sigla = " + sigla + " correta");
-            System.out.println("[obterGraficoCandleBar] Gerando e retornando grafico...");
+            System.out.println("[obterGraficoCandleBar] Sigla = " + sigla + " correta, continuando...");
 
             GeradorDeGraficos gG = new GeradorDeGraficos ();
             
             try {
-                outputStream = gG.candleStickDemo(sigla);
+                outputStream = gG.candleStick(sigla);
             } catch (Exception e) {
                 System.out.println("[obterGraficoCandleBar] Exception ao chamar candlestickdemo");
                 e.printStackTrace();
@@ -61,5 +58,32 @@ public class GraficoController {
 
     }
 
+    @ResponseBody
+    @GetMapping("/grafico/historicopreco/{sigla}")
+    public byte[] obterGraficoHistoricoPreco(@PathVariable("sigla") String sigla) {
+
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+
+        if (sigla.equalsIgnoreCase("MGLU3.SA")) {
+            System.out.println("[obterGraficoHistoricoPreco] Sigla = " + sigla + " correta, continuando...");
+
+            GeradorDeGraficos gG = new GeradorDeGraficos ();
+            
+            try {
+                outputStream = gG.historicoPreco(sigla);
+            } catch (Exception e) {
+                System.out.println("[obterGraficoHistoricoPreco] Exception ao chamar candlestickdemo");
+                e.printStackTrace();
+                return null;
+            }
+            System.out.println("[obterGraficoHistoricoPreco] retornando sucesso");
+            return outputStream.toByteArray();
+
+        } else {
+            System.out.println("[obterGraficoHistoricoPreco] Sigla invalida, retornando NULL");
+            return null;
+        }
+
+    }
     
 }

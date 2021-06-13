@@ -25,7 +25,7 @@
         <br>
         <h3 style="color: green">Gráfico variação preço</h3>
         <br>
-        <img src="../../grafico/candlebar/MGLU3.SA" alt="Se voce está vendo essa mensagem o grafico variacaopreco de ${sigla} nao carregou"/>
+        <img src="../../grafico/historicopreco/MGLU3.SA" alt="Se voce está vendo essa mensagem o grafico variacaopreco de ${sigla} nao carregou"/>
         <br>
         <h3 style="color: green">Gráfico CandleBar</h3>
         <br>
