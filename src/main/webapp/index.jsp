@@ -18,17 +18,16 @@
         <link rel="stylesheet" href="https://cdn.datatables.net/1.10.24/css/dataTables.bootstrap.min.css">
         <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
     </head>
-    <body style="margin: 20px">
+    <body style="margin: 40px">
         <h1>Corretora ABC Homebroker</h1>
         <hr>
         <h3>Bem vindo a Corretora ABC!</h3>
         <br>
         <br>
-        <br>
-        <br>
         <c:if test="${not empty erro}">
-            <h4>A sigla informada não foi localizada</h4>
+            <h4 style="color: red">ERRO: ${erro}</h4>
         </c:if>
+        <br>
         <br>
         <a href="grafico/exibir/MGLU3">Exibir grafico Magazine Luiza</a>
     </body>

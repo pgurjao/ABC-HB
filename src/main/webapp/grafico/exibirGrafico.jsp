@@ -17,19 +17,20 @@
         <link rel="stylesheet" href="https://cdn.datatables.net/1.10.24/css/dataTables.bootstrap.min.css">
         <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
     </head>
-    <body style="margin: 20px">
+    <body style="margin: 40px">
         <h1>Corretora ABC Homebroker</h1>
         <hr>
-        <h4><a href="../../index.jsp">Voltar</a></h4>
+        <h4><a href="../../index.jsp">← Voltar</a></h4>
+        <h3>Exibindo graficos de ${sigla}</h3>
         <br>
+        <h3 style="color: green">Gráfico variação preço</h3>
         <br>
-        <h3>Exibindo grafico de ${sigla}</h3>
+        <img src="../../grafico/candlebar/MGLU3.SA" alt="Se voce está vendo essa mensagem o grafico variacaopreco de ${sigla} nao carregou"/>
         <br>
-        <img src="../../imagens/deletar_registro.png"/>
+        <h3 style="color: green">Gráfico CandleBar</h3>
         <br>
-        <img src="linha" alt="aqui vai o grafico em linha"/>
+        <img src="../../grafico/candlebar/MGLU3.SA" alt="Se voce está vendo essa mensagem o grafico candlebar de ${sigla} nao carregou"/>
         <br>
-        <br>
-        <br>
+        
     </body>
 </html>

@@ -18,7 +18,7 @@ public class CandlestickDemo2 extends JFrame {
 
     public CandlestickDemo2(String stockSymbol) {
         super("CandlestickDemo");
-        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+//        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         DateAxis domainAxis = new DateAxis("Date");
         NumberAxis rangeAxis = new NumberAxis("Price");
@@ -35,18 +35,19 @@ public class CandlestickDemo2 extends JFrame {
 
         //Now create the chart and chart panel
         JFreeChart chart = new JFreeChart(stockSymbol, null, mainPlot, false);
-//        try {
-//            Object linha = new Object ();
-//            ChartUtilities.writeChartAsPNG(linha, chart, 500, 300);
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-            
-        ChartPanel chartPanel = new ChartPanel(chart, false);
-        chartPanel.setPreferredSize(new Dimension(600, 300));
+//        ChartPanel chartPanel = new ChartPanel(chart, false);
+//        chartPanel.setPreferredSize(new Dimension(600, 300));
+//        this.add(chartPanel);
+//        this.pack();
 
-        this.add(chartPanel);
-        this.pack();
+        File chartAsPng = new File ("linha3.png");
+        try {
+            ChartUtilities.saveChartAsPNG(chartAsPng, chart, 500, 300);
+            System.out.println("[CandleStickDemo2] Salvando grafico como PNG ");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+            
     }
 
     protected AbstractXYDataset getDataSet(String stockSymbol) {
