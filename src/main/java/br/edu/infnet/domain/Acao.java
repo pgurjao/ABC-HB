@@ -1,51 +1,39 @@
 package br.edu.infnet.domain;
 
+import com.opencsv.bean.CsvBindByName;
 import com.opencsv.bean.CsvBindByPosition;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 public class Acao {
 
     private String nome;
 
-    @CsvBindByPosition(position = 0)
-    private Date date;
+    @CsvBindByName(column = "Date")
+    private String date;
 
-    @CsvBindByPosition(position = 1)
+    @CsvBindByName(column = "Open")
     private double open;
 
-    @CsvBindByPosition(position = 2)
+    @CsvBindByName(column = "High")
     private double high;
 
-    @CsvBindByPosition(position = 3)
+    @CsvBindByName(column = "Low")
     private double low;
 
-    @CsvBindByPosition(position = 4)
+    @CsvBindByName(column = "Close")
     private double close;
 
-    @CsvBindByPosition(position = 5)
+    @CsvBindByName(column = "Adj Close")
     private double fechamentoAjustado;
 
-    @CsvBindByPosition(position = 6)
+    @CsvBindByName(column = "Volume")
     private long volume;
 
     public Acao() {
     }
 
-    public Acao(Date date, double open, double high, double low, double close, double fechamentoAjustado, long volume) {
-        this.date = date;
-        this.open = open;
-        this.high = high;
-        this.low = low;
-        this.close = close;
-        this.fechamentoAjustado = fechamentoAjustado;
-        this.volume = volume;
-    }
-
     @Override
     public String toString() {
-        return "Acao{" + "date=" + date + ", open=" + open + ", high=" + high + ", low=" + low + ", close=" + close + ", fechamentoAjustado=" + fechamentoAjustado + ", volume=" + volume + '}';
+        return "Acao{" + "nome=" + nome + ", date=" + date + ", open=" + open + ", high=" + high + ", low=" + low + ", close=" + close + ", fechamentoAjustado=" + fechamentoAjustado + ", volume=" + volume + '}';
     }
 
     public String getNome() {
@@ -56,22 +44,22 @@ public class Acao {
         this.nome = nome;
     }
 
-    public Date getDate() {
+    public String getDate() {
         return date;
     }
 
-    public void setDate(String strDate) {
+    public void setDate(String date) {
 
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-        try {
-            Date date = sdf.parse(strDate);
-            System.out.println("Sucesso! Data eh: " + date);
-            this.date = date;
-        } catch (ParseException e) {
-            System.out.println("[Acao] Exception");
-            e.printStackTrace();
-        }
-
+//        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+//        try {
+//            Date date = sdf.parse(strDate);
+//            System.out.println("Sucesso! Data eh: " + date);
+//            this.date = date;
+//        } catch (ParseException e) {
+//            System.out.println("[Acao] Exception");
+//            e.printStackTrace();
+//        }
+        this.date = date;
     }
 
     public double getOpen() {
