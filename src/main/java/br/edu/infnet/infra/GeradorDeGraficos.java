@@ -1,23 +1,34 @@
 package br.edu.infnet.infra;
 
-import org.jfree.chart.*;
-import org.jfree.chart.axis.*;
+import java.awt.Color;
+import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.InputStreamReader;
+import java.net.URL;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.StringTokenizer;
+import org.jfree.chart.ChartUtilities;
+import org.jfree.chart.JFreeChart;
+import org.jfree.chart.axis.DateAxis;
+import org.jfree.chart.axis.NumberAxis;
+import org.jfree.chart.axis.SegmentedTimeline;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.CandlestickRenderer;
-import org.jfree.data.xy.*;
+import org.jfree.data.xy.AbstractXYDataset;
+import org.jfree.data.xy.DefaultOHLCDataset;
+import org.jfree.data.xy.OHLCDataItem;
+import org.jfree.data.xy.XYDataset;
 
-import javax.swing.*;
-import java.awt.*;
-import java.io.*;
-import java.net.URL;
-import java.text.*;
-import java.util.*;
-import java.util.List;
-
-public class CandlestickDemo2 extends JFrame {
-
-    public CandlestickDemo2(String stockSymbol) {
-        super("CandlestickDemo");
+public class GeradorDeGraficos {
+    
+    public ByteArrayOutputStream candleStickDemo(String stockSymbol) {
+//    public void obterGraficoCandleBar(@PathVariable("sigla") String sigla, HttpServletResponse response) {
 //        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         DateAxis domainAxis = new DateAxis("Date");
@@ -33,22 +44,21 @@ public class CandlestickDemo2 extends JFrame {
         rangeAxis.setAutoRangeIncludesZero(false);
         domainAxis.setTimeline(SegmentedTimeline.newMondayThroughFridayTimeline());
 
-        //Now create the chart and chart panel
+        //Now create the chart and write PNG to OutputStream
         JFreeChart chart = new JFreeChart(stockSymbol, null, mainPlot, false);
-//        ChartPanel chartPanel = new ChartPanel(chart, false);
-//        chartPanel.setPreferredSize(new Dimension(600, 300));
-//        this.add(chartPanel);
-//        this.pack();
 
-        File chartAsPng = new File ("linha3.png");
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        File chartAsPng = new File("linha3.png");
         try {
-            ChartUtilities.saveChartAsPNG(chartAsPng, chart, 500, 300);
+//            ChartUtilities.saveChartAsPNG(chartAsPng, chart, 500, 300); // esse metodo salva em arquivo, é preferível escrever no outputstream
+            ChartUtilities.writeChartAsPNG(outputStream, chart, 500, 300);
             System.out.println("[CandleStickDemo2] Salvando grafico como PNG ");
         } catch (Exception e) {
             e.printStackTrace();
         }
-            
-    }
+        return outputStream;
+
+    } // fim do candleStickDemo
 
     protected AbstractXYDataset getDataSet(String stockSymbol) {
         //This is the dataset we are going to create
@@ -63,9 +73,9 @@ public class CandlestickDemo2 extends JFrame {
         result = new DefaultOHLCDataset(stockSymbol, data);
 
         return result;
-    }
-    //This method uses yahoo finance to get the OHLC data
+    } // fim do AbstractXYDataset
 
+    //This method uses yahoo finance to get the OHLC data
     protected OHLCDataItem[] getData(String stockSymbol) {
         List<OHLCDataItem> dataItems = new ArrayList<OHLCDataItem>();
         try {
@@ -102,6 +112,9 @@ public class CandlestickDemo2 extends JFrame {
         OHLCDataItem[] data = dataItems.toArray(new OHLCDataItem[dataItems.size()]);
 
         return data;
-    }
-
+    } // fim do OHLCDataItem
+    
+    
+    
+    
 }
