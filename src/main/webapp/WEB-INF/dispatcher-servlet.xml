@@ -13,6 +13,7 @@
     <mvc:annotation-driven />
     <mvc:resources mapping="/imagens/**" location="/imagens/" />
     <mvc:resources mapping="/grafico/**" location="/grafico/" />
+    <mvc:resources mapping="/cotacoes/**" location="/cotacoes/" />
 
     <context:component-scan base-package="br.edu.infnet" />
     

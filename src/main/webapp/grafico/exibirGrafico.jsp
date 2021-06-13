@@ -27,6 +27,8 @@
         <br>
         <img src="../../imagens/deletar_registro.png"/>
         <br>
+        <img src="linha" alt="aqui vai o grafico em linha"/>
+        <br>
         <br>
         <br>
     </body>
