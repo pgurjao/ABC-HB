@@ -75,6 +75,6 @@
         <br>
         <br>
         <br>
-        <a href="grafico/exibir/MGLU3.SA">Exibir grafico Magazine Luiza</a>
+        <!--<a href="grafico/exibir/MGLU3.SA">Exibir grafico Magazine Luiza</a>-->
     </body>
 </html>

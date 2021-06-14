@@ -39,7 +39,6 @@ public class GeradorDeGraficos {
         this.pesquisa = pesquisa;
         
         String stockSymbol = pesquisa.getSigla();
-
         
         DateAxis domainAxis = new DateAxis("Date");
         NumberAxis rangeAxis = new NumberAxis("Price");
@@ -71,6 +70,8 @@ public class GeradorDeGraficos {
 
     public ByteArrayOutputStream historicoPreco(Pesquisa pesquisa) {
 
+        this.pesquisa = pesquisa;
+        
         String stockSymbol = pesquisa.getSigla();
         
         DateAxis domainAxis = new DateAxis("Date");
@@ -220,12 +221,11 @@ public class GeradorDeGraficos {
                 double volume = Double.parseDouble(st.nextToken());
                 double adjClose = Double.parseDouble(st.nextToken());
                 
-                if (date.compareTo(dataInicial) >= 0 ) {
-                    System.out.println("[GeradorDeGraficos] A data lida '" + df.format(date) + "' eh igual ou maior que " + df.format(dataInicial));
+                if (date.compareTo(dataInicial) >= 0 && date.compareTo(dataFinal) <= 0 ) {
+                    System.out.println("[GeradorDeGraficos] A data lida '" + df.format(date) + "' >= '" + df.format(dataInicial) + "' e data lida '" + df.format(date) + "' <= '" + df.format(dataFinal) + "'");
+                    OHLCDataItem item = new OHLCDataItem(date, open, high, low, close, volume);
+                    dataItems.add(item);
                 }
-
-                OHLCDataItem item = new OHLCDataItem(date, open, high, low, close, volume);
-                dataItems.add(item);
             }
             in.close();
         } catch (Exception e) {

@@ -99,14 +99,23 @@ public class GraficoController {
     }
 
     @ResponseBody
-    @GetMapping("/grafico/historicopreco/{sigla}")
-    public byte[] obterGraficoHistoricoPreco(@PathVariable("sigla") String sigla) {
+    @GetMapping("/grafico/historicopreco")
+    public byte[] obterGraficoHistoricoPreco(@RequestParam Map<String, String> parametros) {
 
+        pesquisa = validarParametros(parametros);
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 
+        
+        if (pesquisa == null) {
+            System.out.println("[obterGraficoHistoricoPreco] Pesquisa depois de parametros validados == null");
+            return null;
+        }
+        System.out.println("[obterGraficoHistoricoPreco] Pesquisa depois de validada = " + pesquisa.toString() );
+        
+        
 //        System.out.println("============== [obterGraficoHistoricoPreco] pesquisa = " + this.getPesquisa().toString() + " ============================ ");
-        if (sigla.equalsIgnoreCase("MGLU3.SA")) {
-            System.out.println("[obterGraficoHistoricoPreco] Sigla = " + sigla + " correta, continuando...");
+        if (pesquisa.getSigla().equalsIgnoreCase("MGLU3.SA")) {
+            System.out.println("[obterGraficoHistoricoPreco] Sigla = " + pesquisa.getSigla() + " correta, continuando...");
 
             GeradorDeGraficos gG = new GeradorDeGraficos();
 

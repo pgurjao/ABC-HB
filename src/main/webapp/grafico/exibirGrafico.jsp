@@ -19,23 +19,22 @@
         <link rel="stylesheet" href="https://cdn.datatables.net/1.10.24/css/dataTables.bootstrap.min.css">
         <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
     </head>
-    <body style="margin: 40px">
+    <body style="margin: 10px">
         <h1>Corretora ABC Homebroker</h1>
         <hr>
         <h4><a href="../ABC-HB/index.jsp">← Voltar</a></h4>
-        <c:if test="${not empty pesquisa}">
-            <h4 style="color: brown">Pesquisa: ${pesquisa}</h4>
-        </c:if>
+        <%--<c:if test="${not empty pesquisa}">--%>
+            <%--<h4 style="color: brown">DEBUG: ${pesquisa}</h4>--%>
+        <%--</c:if>--%>
         
-        <h3>Exibindo graficos de ${sigla}</h3>
-        <br>
+        <center><h3>Exibindo graficos de <b>${sigla}</b></h3></center>
         <h3 style="color: green">Gráfico variação preço</h3>
+        <img src="../ABC-HB/grafico/historicopreco/?sigla=${pesquisa.sigla}&dataInicial=<fmt:formatDate value="${pesquisa.dataInicial}" pattern="yyyy-MM-dd" />&dataFinal=<fmt:formatDate value="${pesquisa.dataFinal}" pattern="yyyy-MM-dd" />&ambiente=${pesquisa.ambiente}"" width="1300" height="500" alt="Se voce está vendo essa mensagem o grafico variacaopreco de ${pesquisa.sigla} nao carregou"/>
         <br>
-        <!--<img src="../ABC-HB/grafico/historicopreco/MGLU3.SA" width="1400" height="600" alt="Se voce está vendo essa mensagem o grafico variacaopreco de ${sigla} nao carregou"/>-->
+        <br>
         <br>
         <h3 style="color: green">Gráfico CandleBar</h3>
-        <br>
-        <img src="../ABC-HB/grafico/candlebar/?sigla=${pesquisa.sigla}&dataInicial=<fmt:formatDate value="${pesquisa.dataInicial}" pattern="yyyy-MM-dd" />&dataFinal=<fmt:formatDate value="${pesquisa.dataFinal}" pattern="yyyy-MM-dd" />&ambiente=${pesquisa.ambiente}" width="1400" height="600" alt="Se voce está vendo essa mensagem o grafico candlebar de ${sigla} nao carregou"/>
+        <img src="../ABC-HB/grafico/candlebar/?sigla=${pesquisa.sigla}&dataInicial=<fmt:formatDate value="${pesquisa.dataInicial}" pattern="yyyy-MM-dd" />&dataFinal=<fmt:formatDate value="${pesquisa.dataFinal}" pattern="yyyy-MM-dd" />&ambiente=${pesquisa.ambiente}" width="1300" height="500" alt="Se voce está vendo essa mensagem o grafico candlebar de ${pesquisa.sigla} nao carregou"/>
         <br>
         
     </body>
