@@ -13,6 +13,7 @@ import br.edu.infnet.infra.GeradorDeGraficos;
 import java.awt.BorderLayout;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Map;
 import javax.validation.Valid;
 import org.springframework.http.MediaType;
@@ -39,25 +40,36 @@ public class GraficoController {
             System.out.println("[exibirGrafico] Erro: Todos os campos sao obrigatorios, por favor preencha todos os campos");
             retorno = new ModelAndView("index");
             retorno.addObject("erro", "Todos os campos são obrigatórios, por favor preencha todos os campos");
-            System.out.println("[exibirGrafico] Pesquisa = " + pesquisa.toString());
+//            System.out.println("[exibirGrafico] Pesquisa = " + pesquisa.toString());
             return retorno;
         } else {
-            System.out.println("[exibirGrafico] Todos os campos foram validados com sucesso");
-            System.out.println("[exibirGrafico] Pesquisa = " + pesquisa.toString());
+            System.out.println("[exibirGrafico] Todos os campos foram pre-validados com sucesso");
+//            System.out.println("[exibirGrafico] Pesquisa = " + pesquisa.toString());
+            
+            // 1.1 VALIDACAO DAS DATAS (DATA FINAL NAO PODE SER MAIOR QUE HOJE E NAO PODE SER MENOR QUE DATA INICIAL)
+            if (pesquisa.getDataFinal().after(new Date())  ) {
+                System.out.println("[exibirGrafico] Data Final mais recente que a data de hoje");
+                retorno = new ModelAndView("index");
+                retorno.addObject("erro", "Data final mais recente que a data de hoje. Por favor preencha a data final com um dia igual ou anterior ao dia de hoje.");
+                return retorno;
+            }
+            
+            if (pesquisa.getDataFinal().before(pesquisa.getDataInicial()) ) {
+                System.out.println("[exibirGrafico] Data Final anterior a data inicial");
+                retorno = new ModelAndView("index");
+                retorno.addObject("erro", "Data final anterior a data inicial. Por favor preencha a data final com um dia igual ou pois a data inicial.");
+                return retorno;
+            }
 
-            // 1.1 - VALIDACAO DA SIGLA
+            // 1.2 - VALIDACAO DA SIGLA
             if (pesquisa.getSigla().equalsIgnoreCase("MGLU3.SA")) {
-                System.out.println("[exibirGrafico] Sigla = " + pesquisa.getSigla() + " correta, continuando...");
                 retorno.addObject("sigla", pesquisa.getSigla());
                 retorno.addObject("pesquisa", pesquisa);
-                System.out.println("[exibirGrafico] adicionado objeto 'sigla'");
             } else {
-                System.out.println("[exibirGrafico] A sigla informada \"" + pesquisa.getSigla() + "\" nao foi localizada, retornando erro");
                 retorno = new ModelAndView("index");
                 retorno.addObject("erro", "A sigla informada \"" + pesquisa.getSigla() + "\" nao foi localizada");
             }
 
-            System.out.println("[exibirGrafico] Ultimo passo antes de encerrar exibirGrafico");
             return retorno;
         }
     }
@@ -72,13 +84,10 @@ public class GraficoController {
         pesquisa = validarParametros(parametros);
         
         if (pesquisa == null) {
-            System.out.println("[obterGraficoCandleBar] Pesquisa depois de parametros validados == null");
             return null;
         }
-        System.out.println("[obterGraficoCandleBar] Pesquisa depois de validada = " + pesquisa.toString() );
         
         if (pesquisa.getSigla().equalsIgnoreCase("MGLU3.SA")) {
-            System.out.println("[obterGraficoCandleBar] Sigla = " + pesquisa.getSigla() + " correta, continuando...");
 
             GeradorDeGraficos gG = new GeradorDeGraficos();
 
@@ -89,11 +98,9 @@ public class GraficoController {
                 e.printStackTrace();
                 return null;
             }
-            System.out.println("[obterGraficoCandleBar] retornando sucesso");
             return outputStream.toByteArray();
 
         } else {
-            System.out.println("[obterGraficoCandleBar] Sigla invalida, retornando NULL");
             return null;
         }
     }
@@ -107,15 +114,11 @@ public class GraficoController {
 
         
         if (pesquisa == null) {
-            System.out.println("[obterGraficoHistoricoPreco] Pesquisa depois de parametros validados == null");
             return null;
         }
-        System.out.println("[obterGraficoHistoricoPreco] Pesquisa depois de validada = " + pesquisa.toString() );
         
         
-//        System.out.println("============== [obterGraficoHistoricoPreco] pesquisa = " + this.getPesquisa().toString() + " ============================ ");
         if (pesquisa.getSigla().equalsIgnoreCase("MGLU3.SA")) {
-            System.out.println("[obterGraficoHistoricoPreco] Sigla = " + pesquisa.getSigla() + " correta, continuando...");
 
             GeradorDeGraficos gG = new GeradorDeGraficos();
 
@@ -126,11 +129,9 @@ public class GraficoController {
                 e.printStackTrace();
                 return null;
             }
-            System.out.println("[obterGraficoHistoricoPreco] retornando sucesso");
             return outputStream.toByteArray();
 
         } else {
-            System.out.println("[obterGraficoHistoricoPreco] Sigla invalida, retornando NULL");
             return null;
         }
 
@@ -146,7 +147,7 @@ public class GraficoController {
                 && parametros.containsKey("dataInicial")
                 && parametros.containsKey("dataFinal")
                 && parametros.containsKey("ambiente")) {
-            System.out.println("[obterGraficoCandleBar] Parametros presentes, validando...");
+            System.out.println("[obterGraficoCandleBar] Todos os parametros presentes, validando...");
 
             if (parametros.get("sigla").isBlank()) {
                 return null;
@@ -181,7 +182,6 @@ public class GraficoController {
                     return null;
                 }
             }
-            System.out.println("[ValidarParamentros] Pesquisa construida = " + pesquisa.toString());
         }
         return pesquisa;
     }

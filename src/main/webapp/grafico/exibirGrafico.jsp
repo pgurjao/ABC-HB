@@ -34,7 +34,7 @@
         <br>
         <br>
         <h3 style="color: green">Gráfico CandleBar</h3>
-        <img src="../ABC-HB/grafico/candlebar/?sigla=${pesquisa.sigla}&dataInicial=<fmt:formatDate value="${pesquisa.dataInicial}" pattern="yyyy-MM-dd" />&dataFinal=<fmt:formatDate value="${pesquisa.dataFinal}" pattern="yyyy-MM-dd" />&ambiente=${pesquisa.ambiente}" width="1300" height="500" alt="Se voce está vendo essa mensagem o grafico candlebar de ${pesquisa.sigla} nao carregou"/>
+        <!--<img src="../ABC-HB/grafico/candlebar/?sigla=${pesquisa.sigla}&dataInicial=<fmt:formatDate value="${pesquisa.dataInicial}" pattern="yyyy-MM-dd" />&dataFinal=<fmt:formatDate value="${pesquisa.dataFinal}" pattern="yyyy-MM-dd" />&ambiente=${pesquisa.ambiente}" width="1300" height="500" alt="Se voce está vendo essa mensagem o grafico candlebar de ${pesquisa.sigla} nao carregou"/>-->
         <br>
         
     </body>
