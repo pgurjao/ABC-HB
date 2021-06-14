@@ -18,10 +18,11 @@
         <link rel="stylesheet" href="https://cdn.datatables.net/1.10.24/css/dataTables.bootstrap.min.css">
         <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
     </head>
-    <body style="margin: 40px">
+    <body style="margin: 10px">
         <h1>Corretora ABC Homebroker</h1>
         <hr>
-        <h3>Bem vindo a Corretora ABC!</h3>
+        <br>
+        <center><h3>Bem vindo a Corretora ABC!</h3>
         <br>
         <br>
         <c:if test="${not empty erro}">
@@ -38,22 +39,22 @@
                 </thead>
                 <tbody>
                     <tr>
-                        <td height="35">&nbsp;&nbsp;Ação</td>
+                        <td height="35">&nbsp;&nbsp;<b>Ação</b></td>
                         <td><center><select name="sigla">
                                     <!--<option value="" disabled selected>Selecione a ação</option>-->
                                     <option value="MGLU3.SA">MGLU3.SA</option>
                                 </select></center></td>
                     </tr>
                     <tr>
-                        <td height="35">&nbsp;&nbsp;Data inicial&nbsp;&nbsp;&nbsp;</td>
+                        <td height="35">&nbsp;&nbsp;<b>Data Inicial</b>&nbsp;&nbsp;&nbsp;</td>
                         <td><center>&nbsp;&nbsp;<input type="date" name="dataInicial">&nbsp;&nbsp;</center></td>
                     </tr>
                     <tr>
-                        <td height="35">&nbsp;&nbsp;Data final</td>
+                        <td height="35">&nbsp;&nbsp;<b>Data Final</b></td>
                         <td><center>&nbsp;&nbsp;<input type="date" name="dataFinal">&nbsp;&nbsp;</center></td>
                     </tr>
                     <tr>
-                        <td height="35">&nbsp;&nbsp;Ambiente</td>
+                        <td height="35">&nbsp;&nbsp;<b>Ambiente</b></td>
                         <td>&nbsp;&nbsp;<input type="radio" id="yahoo" name="ambiente" value="Y">Yahoo (1ano, com null)<br>
                             &nbsp;&nbsp;<input type="radio" id="producao" name="ambiente" value="P">Produção (5 anos, com null)<br>
                             &nbsp;&nbsp;<input type="radio" id="homologacao" name="ambiente" value="H">Homologação (1 ano, com null)<br>
@@ -72,6 +73,7 @@
 
             </table>
         </form>
+        </center>
         <br>
         <br>
         <br>
