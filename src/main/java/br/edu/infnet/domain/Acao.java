@@ -1,11 +1,12 @@
 package br.edu.infnet.domain;
 
 import com.opencsv.bean.CsvBindByName;
-import com.opencsv.bean.CsvBindByPosition;
 
 public class Acao {
 
-    private String nome;
+    private String nomeEmpresa;
+    
+    private String sigla;
 
     @CsvBindByName(column = "Date")
     private String date;
@@ -33,15 +34,7 @@ public class Acao {
 
     @Override
     public String toString() {
-        return "Acao{" + "nome=" + nome + ", date=" + date + ", open=" + open + ", high=" + high + ", low=" + low + ", close=" + close + ", fechamentoAjustado=" + fechamentoAjustado + ", volume=" + volume + '}';
-    }
-
-    public String getNome() {
-        return nome;
-    }
-
-    public void setNome(String nome) {
-        this.nome = nome;
+        return "Acao{" + "sigla=" + sigla + ", date=" + date + ", open=" + open + ", high=" + high + ", low=" + low + ", close=" + close + ", fechamentoAjustado=" + fechamentoAjustado + ", volume=" + volume + '}';
     }
 
     public String getDate() {
@@ -108,6 +101,22 @@ public class Acao {
 
     public void setVolume(long volume) {
         this.volume = volume;
+    }
+
+    public String getNomeEmpresa() {
+        return nomeEmpresa;
+    }
+
+    public void setNomeEmpresa(String nomeEmpresa) {
+        this.nomeEmpresa = nomeEmpresa;
+    }
+
+    public String getSigla() {
+        return sigla;
+    }
+
+    public void setSigla(String sigla) {
+        this.sigla = sigla;
     }
 
 }

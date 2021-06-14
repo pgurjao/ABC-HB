@@ -1,3 +1,5 @@
+<%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
    "http://www.w3.org/TR/html4/loose.dtd">
@@ -20,16 +22,20 @@
     <body style="margin: 40px">
         <h1>Corretora ABC Homebroker</h1>
         <hr>
-        <h4><a href="../../index.jsp">← Voltar</a></h4>
+        <h4><a href="../ABC-HB/index.jsp">← Voltar</a></h4>
+        <c:if test="${not empty pesquisa}">
+            <h4 style="color: brown">Pesquisa: ${pesquisa}</h4>
+        </c:if>
+        
         <h3>Exibindo graficos de ${sigla}</h3>
         <br>
         <h3 style="color: green">Gráfico variação preço</h3>
         <br>
-        <img src="../../grafico/historicopreco/MGLU3.SA" alt="Se voce está vendo essa mensagem o grafico variacaopreco de ${sigla} nao carregou"/>
+        <!--<img src="../ABC-HB/grafico/historicopreco/MGLU3.SA" width="1400" height="600" alt="Se voce está vendo essa mensagem o grafico variacaopreco de ${sigla} nao carregou"/>-->
         <br>
         <h3 style="color: green">Gráfico CandleBar</h3>
         <br>
-        <img src="../../grafico/candlebar/MGLU3.SA" alt="Se voce está vendo essa mensagem o grafico candlebar de ${sigla} nao carregou"/>
+        <img src="../ABC-HB/grafico/candlebar/?sigla=${pesquisa.sigla}&dataInicial=<fmt:formatDate value="${pesquisa.dataInicial}" pattern="yyyy-MM-dd" />&dataFinal=<fmt:formatDate value="${pesquisa.dataFinal}" pattern="yyyy-MM-dd" />&ambiente=${pesquisa.ambiente}" width="1400" height="600" alt="Se voce está vendo essa mensagem o grafico candlebar de ${sigla} nao carregou"/>
         <br>
         
     </body>
