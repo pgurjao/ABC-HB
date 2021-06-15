@@ -136,6 +136,133 @@ public class GraficoController {
         }
 
     }
+    
+    
+    @ResponseBody
+    @GetMapping("/grafico/macd")
+    public byte[] obterGraficoMacd(@RequestParam Map<String, String> parametros) {
+
+        pesquisa = validarParametros(parametros);
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+
+        
+        if (pesquisa == null) {
+            return null;
+        }
+        
+        
+        if (pesquisa.getSigla().equalsIgnoreCase("MGLU3.SA")) {
+
+            GeradorDeGraficos gG = new GeradorDeGraficos();
+
+            try {
+                outputStream = gG.macdChart(pesquisa);
+            } catch (Exception e) {
+                System.out.println("[obterGraficoHistoricoPreco] Exception ao chamar candlestickdemo");
+                e.printStackTrace();
+                return null;
+            }
+            return outputStream.toByteArray();
+
+        } else {
+            return null;
+        }
+
+    }
+    
+    @ResponseBody
+    @GetMapping("/grafico/ema9")
+    public byte[] obterGraficoEma9(@RequestParam Map<String, String> parametros) {
+
+        pesquisa = validarParametros(parametros);
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+
+        
+        if (pesquisa == null) {
+            return null;
+        }
+        
+        
+        if (pesquisa.getSigla().equalsIgnoreCase("MGLU3.SA")) {
+
+            GeradorDeGraficos gG = new GeradorDeGraficos();
+
+            try {
+                outputStream = gG.ema9Chart(pesquisa);
+            } catch (Exception e) {
+                System.out.println("[obterGraficoHistoricoPreco] Exception ao chamar candlestickdemo");
+                e.printStackTrace();
+                return null;
+            }
+            return outputStream.toByteArray();
+
+        } else {
+            return null;
+        }
+
+    }
+    @ResponseBody
+    @GetMapping("/grafico/ema26")
+    public byte[] obterGraficoEma26(@RequestParam Map<String, String> parametros) {
+
+        pesquisa = validarParametros(parametros);
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+
+        
+        if (pesquisa == null) {
+            return null;
+        }
+        
+        
+        if (pesquisa.getSigla().equalsIgnoreCase("MGLU3.SA")) {
+
+            GeradorDeGraficos gG = new GeradorDeGraficos();
+
+            try {
+                outputStream = gG.ema26Chart(pesquisa);
+            } catch (Exception e) {
+                System.out.println("[obterGraficoHistoricoPreco] Exception ao chamar candlestickdemo");
+                e.printStackTrace();
+                return null;
+            }
+            return outputStream.toByteArray();
+
+        } else {
+            return null;
+        }
+
+    }
+    @ResponseBody
+    @GetMapping("/grafico/ema12")
+    public byte[] obterGraficoEma12(@RequestParam Map<String, String> parametros) {
+
+        pesquisa = validarParametros(parametros);
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+
+        
+        if (pesquisa == null) {
+            return null;
+        }
+        
+        
+        if (pesquisa.getSigla().equalsIgnoreCase("MGLU3.SA")) {
+
+            GeradorDeGraficos gG = new GeradorDeGraficos();
+
+            try {
+                outputStream = gG.ema12Chart(pesquisa);
+            } catch (Exception e) {
+                System.out.println("[obterGraficoHistoricoPreco] Exception ao chamar candlestickdemo");
+                e.printStackTrace();
+                return null;
+            }
+            return outputStream.toByteArray();
+
+        } else {
+            return null;
+        }
+
+    }
 
     private static Pesquisa validarParametros(Map<String, String> parametros) {
 

@@ -57,7 +57,7 @@
                         <td height="35">&nbsp;&nbsp;<b>Ambiente</b></td>
                         <td>&nbsp;&nbsp;<input type="radio" id="yahoo" name="ambiente" value="Y">Yahoo (1ano, com null)<br>
                             &nbsp;&nbsp;<input type="radio" id="producao" name="ambiente" value="P">Produção (5 anos, com null)<br>
-                            &nbsp;&nbsp;<input type="radio" id="homologacao" name="ambiente" value="H">Homologação (1 ano, com null)<br>
+                            &nbsp;&nbsp;<input type="radio" id="homologacao" name="ambiente" value="H">Homologação (2019-09, sem null)<br>
                             &nbsp;&nbsp;<input type="radio" id="teste" name="ambiente" checked value="T">Teste (2021 em diante, sem null)&nbsp;&nbsp;<br>
                         </td>
 

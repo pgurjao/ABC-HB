@@ -26,17 +26,26 @@ import org.jfree.data.xy.AbstractXYDataset;
 import org.jfree.data.xy.DefaultOHLCDataset;
 import org.jfree.data.xy.OHLCDataItem;
 import org.jfree.data.xy.XYDataset;
+import org.jfree.data.xy.XYSeries;
+import org.jfree.data.xy.XYSeriesCollection;
 
 public class GeradorDeGraficos {
 
+    boolean podeCalcularEma = false;
     private int largura = 1500;
     private int altura = 700;
     private Pesquisa pesquisa;
+    private String erro;
+    double[] dadosParaEma;
+    double[] ema9;
+    double[] ema12;
+    double[] ema26;
+    double[] macd;
+    private List<Double> dadosSma10Dias = new ArrayList<>();
 
     public ByteArrayOutputStream candleStick(Pesquisa pesquisa) {
 
-        System.out.println("============== [GeradorDeGraficos] pesquisa = " + pesquisa.toString() + " ============================ ");
-
+        String tituloGrafico;
         this.pesquisa = pesquisa;
 
         String stockSymbol = pesquisa.getSigla();
@@ -47,7 +56,8 @@ public class GeradorDeGraficos {
         XYDataset dataset = getDataSet(stockSymbol);
 
         if (dataset == null) {
-            System.out.println("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX [GeradorDeGraficos] dataset == null XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
+            tituloGrafico = "ERRO NA FORMATACAO DO ARQUIVO CSV! " + erro;
+            System.out.println("[GeradorDeGraficos.HistoricoDePreco] Erro na formatacao do arquivo CSV lido. Por favor verifique a estrutura do arquivo.");
         }
 
         XYPlot mainPlot = new XYPlot(dataset, domainAxis, rangeAxis, renderer);
@@ -80,98 +90,322 @@ public class GeradorDeGraficos {
         String stockSymbol = pesquisa.getSigla();
         String tituloGrafico = pesquisa.getSigla();
 
-        DateAxis domainAxis = new DateAxis("Date");
-        NumberAxis rangeAxis = new NumberAxis("Price");
+        DateAxis domainAxis = new DateAxis("Dia");
+        NumberAxis rangeAxis = new NumberAxis("Preço");
         XYLineAndShapeRenderer renderer = new XYLineAndShapeRenderer();
-//        System.out.println("[GeradorDeGraficos.HistoricoDePreco] configurado REDENDER para XYLineAndShapeRenderer");
+
         XYDataset dataset = getDataSet(stockSymbol);
+
         if (dataset == null) {
-            tituloGrafico = "ERRO NA FORMATACAO DO ARQUIVO CSV!";
+            tituloGrafico = "ERRO NA FORMATACAO DO ARQUIVO CSV! " + erro;
             System.out.println("[GeradorDeGraficos.HistoricoDePreco] Erro na formatacao do arquivo CSV lido. Por favor verifique a estrutura do arquivo.");
         }
-//        System.out.println("[GeradorDeGraficos.HistoricoDePreco] Setado XYDataSet");
+
+        ema9 = CalculadorDeMedias.calculateEmaValues(dadosParaEma, 9);
+        ema12 = CalculadorDeMedias.calculateEmaValues(dadosParaEma, 12);
+        ema26 = CalculadorDeMedias.calculateEmaValues(dadosParaEma, 26);
+
+        int i = 0;
+        for (double d : ema9) {
+            System.out.println("[GeradorDeGraficos.HistoricoDePreco] Ema 9[" + i + "] = " + ema9[i]);
+            i++;
+        }
+        i = 0;
+        for (double d : ema12) {
+            System.out.println("[GeradorDeGraficos.HistoricoDePreco] Ema 12[" + i + "] = " + ema12[i]);
+            i++;
+        }
+        i = 0;
+        for (double d : ema26) {
+            System.out.println("[GeradorDeGraficos.HistoricoDePreco] Ema 26[" + i + "] = " + ema26[i]);
+            i++;
+        }
 
         XYPlot mainPlot = new XYPlot(dataset, domainAxis, rangeAxis, renderer);
-//        System.out.println("[GeradorDeGraficos.HistoricoDePreco] Plotado XYPlot");
 
         //Do some setting up, see the API Doc
         renderer.setSeriesPaint(0, Color.BLACK);
-//        renderer.setSeriesPaint(1, Color.RED);
-//        System.out.println("[GeradorDeGraficos.HistoricoDePreco] Renderizado setSeriesPaint");
+        renderer.setSeriesPaint(1, Color.RED);
 //        renderer.setDrawVolume(false);
         rangeAxis.setAutoRangeIncludesZero(false);
-//        System.out.println("[GeradorDeGraficos.HistoricoDePreco] Setado AutoRangeIncludesZero");
 
         domainAxis.setTimeline(SegmentedTimeline.newMondayThroughFridayTimeline());
-//        System.out.println("[GeradorDeGraficos.HistoricoDePreco] Setado timeLine domainAxis");
 
         //Now create the chart and write PNG to OutputStream
         JFreeChart chart = new JFreeChart(tituloGrafico, null, mainPlot, true);
-//        System.out.println("[GeradorDeGraficos.HistoricoDePreco] JFreeChart = new JFreeChart");
 
         //Escreve o grafico em um ByteArrayOutputStream para ser retornado pelo controller, via GET, para o JSP exibir a imagem
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-//        System.out.println("[GeradorDeGraficos.HistoricoDePreco] ByteArrayOutputStream outputStream = new ByteArrayOutputStream");
         try {
-//            ChartUtilities.saveChartAsPNG(arquivo, chart, 500, 300); // esse metodo salva em arquivo, é preferível escrever no outputstream
-//            System.out.println("[GeradorDeGraficos.HistoricoDePreco] Preparando para writeChartAsPng ");
             ChartUtilities.writeChartAsPNG(outputStream, chart, largura, altura);
         } catch (Exception e) {
             System.out.println("[HistoricoDePreco] Exception ao gerar grafico HistoricoDePreco!");
             e.printStackTrace();
         }
-//        System.out.println("[GeradorDeGraficos.HistoricoDePreco] Grafico salvo como PNG ");
-//        System.out.println("[GeradorDeGraficos.HistoricoDePreco] retornando outputStream");
         return outputStream;
 
     } // fim do historicoPreco
 
-    public ByteArrayOutputStream macdChart(String stockSymbol) {
+    public ByteArrayOutputStream macdChart(Pesquisa pesquisa) {
 
-        DateAxis domainAxis = new DateAxis("Date");
-        NumberAxis rangeAxis = new NumberAxis("Price");
+        this.pesquisa = pesquisa;
+
+        String stockSymbol = pesquisa.getSigla();
+        String tituloGrafico = pesquisa.getSigla();
+
+        DateAxis domainAxis = new DateAxis("Dia");
+        NumberAxis rangeAxis = new NumberAxis("Valor");
         XYLineAndShapeRenderer renderer = new XYLineAndShapeRenderer();
-//        System.out.println("[GeradorDeGraficos.HistoricoDePreco] configurado REDENDER para XYLineAndShapeRenderer");
+
         XYDataset dataset = getDataSet(stockSymbol);
 
-//        System.out.println("[GeradorDeGraficos.HistoricoDePreco] Setado XYDataSet");
+        if (dataset == null) {
+            tituloGrafico = "ERRO NA FORMATACAO DO ARQUIVO CSV! " + erro;
+            System.out.println("[GeradorDeGraficos.macdChart] Erro na formatacao do arquivo CSV lido. Por favor verifique a estrutura do arquivo.");
+        }
 
-        XYPlot mainPlot = new XYPlot(dataset, domainAxis, rangeAxis, renderer);
-//        System.out.println("[GeradorDeGraficos.HistoricoDePreco] Plotado XYPlot");
+        ema9 = CalculadorDeMedias.calculateEmaValues(dadosParaEma, 9);
+        ema12 = CalculadorDeMedias.calculateEmaValues(dadosParaEma, 12);
+        ema26 = CalculadorDeMedias.calculateEmaValues(dadosParaEma, 26);
+        macd = new double[ema12.length];
+
+        for (int i = 0; i < ema12.length; i++) {
+            macd[i] = ema12[i] - ema26[i];
+            System.out.println("[GeradorDeGraficos.macdChart] Macd[" + i + "] = " + macd[i]);
+        }
+
+        XYSeriesCollection datasetMacd = new XYSeriesCollection();
+        XYSeries series1 = new XYSeries("MACD line");
+        
+        for (int i = 0; i < macd.length; i++) {
+            series1.add( i, macd[i]);
+            System.out.println("[GeradorDeGraficos.macdChart] series1.add = " + i + "-" + macd[i]);
+        }
+        datasetMacd.addSeries(series1);
+
+        
+
+        XYPlot mainPlot = new XYPlot(datasetMacd, domainAxis, rangeAxis, renderer);
 
         //Do some setting up, see the API Doc
         renderer.setSeriesPaint(0, Color.BLACK);
-//        System.out.println("[GeradorDeGraficos.HistoricoDePreco] Renderizado setSeriesPaint");
+        renderer.setSeriesPaint(1, Color.RED);
 //        renderer.setDrawVolume(false);
         rangeAxis.setAutoRangeIncludesZero(false);
-//        System.out.println("[GeradorDeGraficos.HistoricoDePreco] Setado AutoRangeIncludesZero");
 
         domainAxis.setTimeline(SegmentedTimeline.newMondayThroughFridayTimeline());
-//        System.out.println("[GeradorDeGraficos.HistoricoDePreco] Setado timeLine domainAxis");
 
         //Now create the chart and write PNG to OutputStream
-        JFreeChart chart = new JFreeChart(stockSymbol, null, mainPlot, false);
-//        System.out.println("[GeradorDeGraficos.HistoricoDePreco] JFreeChart = new JFreeChart");
+        JFreeChart chart = new JFreeChart(tituloGrafico, null, mainPlot, true);
 
         //Escreve o grafico em um ByteArrayOutputStream para ser retornado pelo controller, via GET, para o JSP exibir a imagem
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-//        System.out.println("[GeradorDeGraficos.HistoricoDePreco] ByteArrayOutputStream outputStream = new ByteArrayOutputStream");
         try {
-//            ChartUtilities.saveChartAsPNG(arquivo, chart, 500, 300); // esse metodo salva em arquivo, é preferível escrever no outputstream
-//            System.out.println("[GeradorDeGraficos.HistoricoDePreco] Preparando para writeChartAsPng ");
             ChartUtilities.writeChartAsPNG(outputStream, chart, largura, altura);
-//            System.out.println("[GeradorDeGraficos.HistoricoDePreco] Grafico salvo como PNG ");
         } catch (Exception e) {
+            System.out.println("[macdChart] Exception ao gerar grafico HistoricoDePreco!");
             e.printStackTrace();
         }
-//        System.out.println("[GeradorDeGraficos.HistoricoDePreco] retornando outputStream");
         return outputStream;
 
-    } // fim do MACD chart
+    } // fim do macdchart
+    
+    public ByteArrayOutputStream ema9Chart(Pesquisa pesquisa) {
+
+        this.pesquisa = pesquisa;
+
+        String stockSymbol = pesquisa.getSigla();
+        String tituloGrafico = pesquisa.getSigla();
+
+        DateAxis domainAxis = new DateAxis("Dia");
+        NumberAxis rangeAxis = new NumberAxis("Valor");
+        XYLineAndShapeRenderer renderer = new XYLineAndShapeRenderer();
+
+        XYDataset dataset = getDataSet(stockSymbol);
+
+        if (dataset == null) {
+            tituloGrafico = "ERRO NA FORMATACAO DO ARQUIVO CSV! " + erro;
+            System.out.println("[GeradorDeGraficos.macdChart] Erro na formatacao do arquivo CSV lido. Por favor verifique a estrutura do arquivo.");
+        }
+
+        ema9 = CalculadorDeMedias.calculateEmaValues(dadosParaEma, 9);
+
+//        for (int i = 0; i < ema12.length; i++) {
+//            macd[i] = ema12[i] - ema26[i];
+//            System.out.println("[GeradorDeGraficos.macdChart] Macd[" + i + "] = " + macd[i]);
+//        }
+
+        XYSeriesCollection datasetMacd = new XYSeriesCollection();
+        XYSeries series1 = new XYSeries("EMA 9  chart");
+        
+        for (int i = 0; i < ema9.length; i++) {
+            series1.add( i, ema9[i]);
+            System.out.println("[GeradorDeGraficos.macdChart] series1.add = " + i + "-" + ema9[i]);
+        }
+        datasetMacd.addSeries(series1);
+
+        
+
+        XYPlot mainPlot = new XYPlot(datasetMacd, domainAxis, rangeAxis, renderer);
+
+        //Do some setting up, see the API Doc
+        renderer.setSeriesPaint(0, Color.BLACK);
+        renderer.setSeriesPaint(1, Color.RED);
+//        renderer.setDrawVolume(false);
+        rangeAxis.setAutoRangeIncludesZero(false);
+
+        domainAxis.setTimeline(SegmentedTimeline.newMondayThroughFridayTimeline());
+
+        
+        tituloGrafico = "EMA 9 chart";
+        //Now create the chart and write PNG to OutputStream
+        JFreeChart chart = new JFreeChart(tituloGrafico, null, mainPlot, true);
+
+        //Escreve o grafico em um ByteArrayOutputStream para ser retornado pelo controller, via GET, para o JSP exibir a imagem
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        try {
+            ChartUtilities.writeChartAsPNG(outputStream, chart, largura, altura);
+        } catch (Exception e) {
+            System.out.println("[macdChart] Exception ao gerar grafico HistoricoDePreco!");
+            e.printStackTrace();
+        }
+        return outputStream;
+
+    } // fim do ema9
+    
+    public ByteArrayOutputStream ema12Chart(Pesquisa pesquisa) {
+
+        this.pesquisa = pesquisa;
+
+        String stockSymbol = pesquisa.getSigla();
+        String tituloGrafico = pesquisa.getSigla();
+
+        DateAxis domainAxis = new DateAxis("Dia");
+        NumberAxis rangeAxis = new NumberAxis("Valor");
+        XYLineAndShapeRenderer renderer = new XYLineAndShapeRenderer();
+
+        XYDataset dataset = getDataSet(stockSymbol);
+
+        if (dataset == null) {
+            tituloGrafico = "ERRO NA FORMATACAO DO ARQUIVO CSV! " + erro;
+            System.out.println("[GeradorDeGraficos.macdChart] Erro na formatacao do arquivo CSV lido. Por favor verifique a estrutura do arquivo.");
+        }
+
+        ema12 = CalculadorDeMedias.calculateEmaValues(dadosParaEma, 12);
+
+//        for (int i = 0; i < ema12.length; i++) {
+//            macd[i] = ema12[i] - ema26[i];
+//            System.out.println("[GeradorDeGraficos.macdChart] Macd[" + i + "] = " + macd[i]);
+//        }
+
+        XYSeriesCollection datasetMacd = new XYSeriesCollection();
+        XYSeries series1 = new XYSeries("EMA 12 chart");
+        
+        for (int i = 0; i < ema12.length; i++) {
+            series1.add( i, ema12[i]);
+            System.out.println("[GeradorDeGraficos.macdChart] series1.add = " + i + "-" + ema12[i]);
+        }
+        datasetMacd.addSeries(series1);
+
+        
+
+        XYPlot mainPlot = new XYPlot(datasetMacd, domainAxis, rangeAxis, renderer);
+
+        //Do some setting up, see the API Doc
+        renderer.setSeriesPaint(0, Color.BLACK);
+        renderer.setSeriesPaint(1, Color.RED);
+//        renderer.setDrawVolume(false);
+        rangeAxis.setAutoRangeIncludesZero(false);
+
+        domainAxis.setTimeline(SegmentedTimeline.newMondayThroughFridayTimeline());
+
+        
+        tituloGrafico = "EMA 12 chart";
+        //Now create the chart and write PNG to OutputStream
+        JFreeChart chart = new JFreeChart(tituloGrafico, null, mainPlot, true);
+
+        //Escreve o grafico em um ByteArrayOutputStream para ser retornado pelo controller, via GET, para o JSP exibir a imagem
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        try {
+            ChartUtilities.writeChartAsPNG(outputStream, chart, largura, altura);
+        } catch (Exception e) {
+            System.out.println("[macdChart] Exception ao gerar grafico HistoricoDePreco!");
+            e.printStackTrace();
+        }
+        return outputStream;
+
+    } // fim do ema12
+    
+    public ByteArrayOutputStream ema26Chart(Pesquisa pesquisa) {
+
+        this.pesquisa = pesquisa;
+
+        String stockSymbol = pesquisa.getSigla();
+        String tituloGrafico = pesquisa.getSigla();
+
+        DateAxis domainAxis = new DateAxis("Dia");
+        NumberAxis rangeAxis = new NumberAxis("Valor");
+        XYLineAndShapeRenderer renderer = new XYLineAndShapeRenderer();
+
+        XYDataset dataset = getDataSet(stockSymbol);
+
+        if (dataset == null) {
+            tituloGrafico = "ERRO NA FORMATACAO DO ARQUIVO CSV! " + erro;
+            System.out.println("[GeradorDeGraficos.macdChart] Erro na formatacao do arquivo CSV lido. Por favor verifique a estrutura do arquivo.");
+        }
+
+        ema26 = CalculadorDeMedias.calculateEmaValues(dadosParaEma, 26);
+
+//        for (int i = 0; i < ema12.length; i++) {
+//            macd[i] = ema12[i] - ema26[i];
+//            System.out.println("[GeradorDeGraficos.macdChart] Macd[" + i + "] = " + macd[i]);
+//        }
+
+        XYSeriesCollection datasetMacd = new XYSeriesCollection();
+        XYSeries series1 = new XYSeries("EMA 9  chart");
+        
+        for (int i = 0; i < ema26.length; i++) {
+            series1.add( i, ema26[i]);
+            System.out.println("[GeradorDeGraficos.macdChart] series1.add = " + i + "-" + ema26[i]);
+        }
+        datasetMacd.addSeries(series1);
+
+        
+
+        XYPlot mainPlot = new XYPlot(datasetMacd, domainAxis, rangeAxis, renderer);
+
+        //Do some setting up, see the API Doc
+        renderer.setSeriesPaint(0, Color.BLACK);
+        renderer.setSeriesPaint(1, Color.RED);
+//        renderer.setDrawVolume(false);
+        rangeAxis.setAutoRangeIncludesZero(false);
+
+        domainAxis.setTimeline(SegmentedTimeline.newMondayThroughFridayTimeline());
+
+        
+        tituloGrafico = "EMA 26 chart";
+        //Now create the chart and write PNG to OutputStream
+        JFreeChart chart = new JFreeChart(tituloGrafico, null, mainPlot, true);
+
+        //Escreve o grafico em um ByteArrayOutputStream para ser retornado pelo controller, via GET, para o JSP exibir a imagem
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        try {
+            ChartUtilities.writeChartAsPNG(outputStream, chart, largura, altura);
+        } catch (Exception e) {
+            System.out.println("[macdChart] Exception ao gerar grafico HistoricoDePreco!");
+            e.printStackTrace();
+        }
+        return outputStream;
+
+    } // fim do ema26
 
     protected AbstractXYDataset getDataSet(String stockSymbol) {
-        //This is the dataset we are going to create
+
+        XYSeriesCollection dataset = new XYSeriesCollection();
+
+//This is the dataset we are going to create
         DefaultOHLCDataset result = null;
+
         //This is the data needed for the dataset
         OHLCDataItem[] data;
 
@@ -184,6 +418,7 @@ public class GeradorDeGraficos {
         //Create a dataset, an Open, High, Low, Close dataset
         result = new DefaultOHLCDataset(stockSymbol, data);
 
+//        System.out.println("[HistoricoDePreco] result.getSeriesCount ");
         return result;
     } // fim do AbstractXYDataset
 
@@ -191,8 +426,14 @@ public class GeradorDeGraficos {
     protected OHLCDataItem[] getData(String stockSymbol) {
         List<OHLCDataItem> dataItems = new ArrayList<OHLCDataItem>();
 
-        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+        int quantidadeRegistros = -1;
+        int indiceDataInicial = -1;
+        boolean dataLocalizada = false;
+
+        DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
         Date date;
+        Date dataInicial = pesquisa.getDataInicial();
+        Date dataFinal = pesquisa.getDataFinal();
 
         try {
             date = df.parse("1950-01-01");
@@ -201,8 +442,7 @@ public class GeradorDeGraficos {
             return null;
         }
 
-        Date dataInicial = pesquisa.getDataInicial();
-        Date dataFinal = pesquisa.getDataFinal();
+        OHLCDataItem ohlcDataInicial = new OHLCDataItem(date, 0.0, 0.0, 0.0, 0.0, 0.0);
 
         try {
             String strUrl;
@@ -218,8 +458,8 @@ public class GeradorDeGraficos {
                     System.out.println("[GeradorDeGraficos] Ambiente = Producao (5 anos, com null)");
                     break;
                 case "H":
-                    strUrl = "http://localhost:8080/ABC-HB/cotacoes/MGLU3.SA-1ano.csv";
-                    System.out.println("[GeradorDeGraficos] Ambiente = Homologacao (1 ano, com null)");
+                    strUrl = "http://localhost:8080/ABC-HB/cotacoes/MGLU3.SA-2019-09-sem-null.csv";
+                    System.out.println("[GeradorDeGraficos] Ambiente = Homologacao (desde 2019-09, sem null)");
                     break;
                 case "T":
                     strUrl = "http://localhost:8080/ABC-HB/cotacoes/MGLU3.SA-teste.csv";
@@ -233,6 +473,10 @@ public class GeradorDeGraficos {
             }
             URL url = new URL(strUrl);
             BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()));
+
+            List<Double> dadosFechamento = new ArrayList<>();
+            List<Date> datasFechamento = new ArrayList<>();
+            List<Date> subListaDatasFechamento = new ArrayList<>();
 
             String inputLine;
             in.readLine();
@@ -248,38 +492,150 @@ public class GeradorDeGraficos {
                 double volume = Double.parseDouble(st.nextToken());
                 double adjClose = Double.parseDouble(st.nextToken());
 
+//                dadosFechamento.add(close);
+//                datasFechamento.add(date);
+//
+//                System.out.println("[GeradorDeGraficos] Date = " + df.format(date));
                 if (date.compareTo(dataInicial) >= 0 && date.compareTo(dataFinal) <= 0) {
-                    System.out.println("[GeradorDeGraficos] A data lida '" + df.format(date) + "' >= '" + df.format(dataInicial) + "' e data lida '" + df.format(date) + "' <= '" + df.format(dataFinal) + "'");
+                    quantidadeRegistros++;
+                    System.out.println("[GeradorDeGraficos] Se passaram " + quantidadeRegistros + " dia(s) desde a dataInicial " + df.format(dataInicial));
+                    dataLocalizada = true;
+                    System.out.println("[GeradorDeGraficos] " + df.format(dataInicial) + " <= '" + df.format(date) + "' <= " + df.format(dataFinal));
+
+                    if (date.compareTo(dataInicial) == 0) {
+                        indiceDataInicial = dataItems.size();
+                    }
+
+//                    if (dadosFechamento.size() >= 10) {
+//                        dadosSma10Dias = dadosFechamento.subList((dadosFechamento.size()) - 10, dadosFechamento.size());
+//                        subListaDatasFechamento = datasFechamento.subList((datasFechamento.size()) - 10, datasFechamento.size());
+//
+//                        System.out.println("[GeradorDeGraficos] dadosSma10Dias = " + dadosSma10Dias.toString());
+//                        System.out.println("[GeradorDeGraficos] DatasFechament = ["
+//                                + df.format(datasFechamento.get(datasFechamento.size() - 10)) + ", "
+//                                + df.format(datasFechamento.get(datasFechamento.size() - 9)) + ", "
+//                                + df.format(datasFechamento.get(datasFechamento.size() - 8)) + ", "
+//                                + df.format(datasFechamento.get(datasFechamento.size() - 7)) + ", "
+//                                + df.format(datasFechamento.get(datasFechamento.size() - 6)) + ", "
+//                                + df.format(datasFechamento.get(datasFechamento.size() - 5)) + ", "
+//                                + df.format(datasFechamento.get(datasFechamento.size() - 4)) + ", "
+//                                + df.format(datasFechamento.get(datasFechamento.size() - 3)) + ", "
+//                                + df.format(datasFechamento.get(datasFechamento.size() - 2)) + ", "
+//                                + df.format(datasFechamento.get(datasFechamento.size() - 1))
+//                                + "]"
+//                        );
+//                    }
+//                }
+                }
+
+                if (date.compareTo(dataFinal) <= 0) {
                     OHLCDataItem item = new OHLCDataItem(date, open, high, low, close, volume);
+                    System.out.println("[GeradorDeGraficos] Adicionando registros a lista (data =" + df.format(item.getDate()) + ")");
                     dataItems.add(item);
                 }
             }
             in.close();
         } catch (ParseException e) {
+            erro = "Alguma data com formatacao invalida";
             System.out.println("[GeradorDeGraficos] ParseException ao tentar ler o CSV, verifique a formatacao do arquivo CSV lido");
 //            e.printStackTrace();
             return null;
         } catch (NumberFormatException e) {
+            erro = "Algum double com formatacao invalida";
+
             if (date.compareTo(dataInicial) >= 0 && date.compareTo(dataFinal) <= 0) {
                 System.out.println("[GeradorDeGraficos] NumberFormatException linha '" + df.format(date) + "' ao tentar ler o CSV DENTRO do range das datas iniciais e finais");
-                return null;
             } else {
                 System.out.println("[GeradorDeGraficos] NumberFormatException linha '" + df.format(date) + "' ao tentar ler o CSV FORA do range das datas iniciais e finais");
             }
             e.printStackTrace();
+            return null;
 
+        } catch (IndexOutOfBoundsException e) {
+            erro = "Exception na sublista";
+            System.out.println("[GeradorDeGraficos] Exception na sublista");
+            e.printStackTrace();
+            return null;
         } catch (Exception e) {
-            System.out.println("[GeradorDeGraficos] Exception ao tentar ler o CSV, , verifique a formatacao do arquivo CSV lido");
-//            e.printStackTrace();
+            erro = "Exception ao ler arquivo CSV";
+            System.out.println("[GeradorDeGraficos] Exception ao tentar ler o CSV. Verifique a formatacao do arquivo CSV lido");
+            e.printStackTrace();
+            return null;
         }
-        //Data from Yahoo is from newest to oldest. Reverse so it is oldest to newest
-        Collections.reverse(dataItems);
 
-        //Convert the list into an array
-        OHLCDataItem[] data = dataItems.toArray(new OHLCDataItem[dataItems.size()]);
+        if (dataLocalizada == false) {
+            System.out.println("[GeradorDeGraficos] Data nao localizada no arquivo CSV");
+            erro = "Data nao localizada no arquivo CSV";
+            return null;
+        }
+
+//        int i = dataItems.indexOf(ohlcDataInicial);
+//        if (i > 2) {
+//            System.out.println("[GeradorDeGraficos] dataItems.get(i) = " + df.format(dataItems.get(i).getDate()));
+//            System.out.println("[GeradorDeGraficos] i = " + i);
+//
+//            System.out.println("[GeradorDeGraficos] dataItems.get(i-2) " + df.format(dataItems.get(i - 2).getDate()));
+//            System.out.println("[GeradorDeGraficos] dataItems.get(i-1) " + df.format(dataItems.get(i - 1).getDate()));
+//            System.out.println("[GeradorDeGraficos] dataItems.get(i) " + df.format(dataItems.get(i).getDate()));
+//            System.out.println("[GeradorDeGraficos] dataItems.get(i+1) " + df.format(dataItems.get(i + 1).getDate()));
+//            System.out.println("[GeradorDeGraficos] dataItems.get(i+2) " + df.format(dataItems.get(i + 2).getDate()));
+//        } else {
+//            System.out.println("[GeradorDeGraficos] indice i = -1");
+//        }
+        if (indiceDataInicial >= 9) {
+            podeCalcularEma = true;
+
+            for (int i = indiceDataInicial - 9; i <= indiceDataInicial; i++) {
+                dadosSma10Dias.add((Double) dataItems.get(i).getClose());
+            }
+
+//            for (Double d : dadosSma10Dias) {
+//                System.out.println("[GeradorDeGraficos] dadosSma10Dias = " + d);
+//            }
+        }
+
+        // CRIAR SUBLISTA APENAS COM DADOS PARA CRIAR O GRAFICO
+        List<OHLCDataItem> dadosParaGrafico = new ArrayList<OHLCDataItem>();
+        dadosParaGrafico = dataItems.subList(dataItems.size() - (quantidadeRegistros + 1), dataItems.size());
+
+        System.out.println("[GeradorDeGraficos] ======================================== ");
+        for (OHLCDataItem ohlc : dadosParaGrafico) {
+            System.out.println("[GeradorDeGraficos] OHLC = " + df.format(ohlc.getDate()) + ", close = " + ohlc.getClose());
+        }
+
+//        System.out.println("[GeradorDeGraficos] Registro (" + indiceDataInicial + ") Data Inicial = " + df.format(dataItems.get(indiceDataInicial).getDate()));
+
+        // CRIANDO ARRAY DE DOUBLE PARA ENVIAR PARA CalculadorDeMedias
+        dadosParaEma = new double[dadosParaGrafico.size()];
+        int i = 0;
+        for (OHLCDataItem o : dadosParaGrafico) {
+            dadosParaEma[i] = (Double) o.getClose();
+            i++;
+        }
+        // EXIBE O ARRAY CRIADO
+//        for (double d : dadosParaEma) {
+//            System.out.println("[GeradorDeGraficos] dadosParaEma[] = " + d);
+//        }
+
+        double[] testeEma = CalculadorDeMedias.calculateEmaValues(dadosParaEma, 9);
+        // EXIBE O ARRAY CRIADO
+        for (double d : testeEma) {
+            System.out.println("[GeradorDeGraficos] testeEma = " + d);
+        }
+
+        // OS DADOS DO YAHOO SAO DO MAIS NOVO PARA O MAIS ANTIGO. EH PRECISO REVERTER A LISTA PARA A ORDENACAO MAIS ANTIGO PARA O MAIS NOVO
+        Collections.reverse(dadosParaGrafico);
+
+        // CONVERTENDO LISTA PARA UM ARRAY
+        OHLCDataItem[] data = dadosParaGrafico.toArray(new OHLCDataItem[dadosParaGrafico.size()]);
 
         return data;
     } // fim do OHLCDataItem
+
+    public double calculaSMA10() {
+
+        return 0.5;
+    }
 
     public Pesquisa getPesquisa() {
         return pesquisa;
