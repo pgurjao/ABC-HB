@@ -23,56 +23,72 @@
         <hr>
         <br>
         <center><h3>Bem vindo a Corretora ABC!</h3>
-        <br>
-        <br>
-        <c:if test="${not empty erro}">
-            <h4 style="color: red">ERRO: ${erro}</h4>
-        </c:if>
-        <br>
-        <br>
-        <form action="exibirGrafico" method="post">
-            <table border="1" cellpadding="8" cellspacing="0">
-                <thead>
-                    <tr>
-                        <th colspan="2"><center><h4>Preencha as opções</h4></center></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td height="35">&nbsp;&nbsp;<b>Ação</b></td>
-                        <td><center><select name="sigla">
-                                    <!--<option value="" disabled selected>Selecione a ação</option>-->
-                                    <option value="MGLU3.SA">MGLU3.SA</option>
-                                </select></center></td>
-                    </tr>
-                    <tr>
-                        <td height="35">&nbsp;&nbsp;<b>Data Inicial</b>&nbsp;&nbsp;&nbsp;</td>
-                        <td><center>&nbsp;&nbsp;<input type="date" name="dataInicial">&nbsp;&nbsp;</center></td>
-                    </tr>
-                    <tr>
-                        <td height="35">&nbsp;&nbsp;<b>Data Final</b></td>
-                        <td><center>&nbsp;&nbsp;<input type="date" name="dataFinal">&nbsp;&nbsp;</center></td>
-                    </tr>
-                    <tr>
-                        <td height="35">&nbsp;&nbsp;<b>Ambiente</b></td>
-                        <td>&nbsp;&nbsp;<input type="radio" id="yahoo" name="ambiente" value="Y">Yahoo (1ano, com null)<br>
-                            &nbsp;&nbsp;<input type="radio" id="producao" name="ambiente" value="P">Produção (5 anos, com null)<br>
-                            &nbsp;&nbsp;<input type="radio" id="homologacao" name="ambiente" value="H">Homologação (2019-09, sem null)<br>
-                            &nbsp;&nbsp;<input type="radio" id="teste" name="ambiente" checked value="T">Teste (2021 em diante, sem null)&nbsp;&nbsp;<br>
-                        </td>
+            <br>
+            <br>
+            <c:if test="${not empty erro}">
+                <h4 style="color: red">ERRO: ${erro}</h4>
+            </c:if>
+            <br>
+            <br>
+            <form action="exibirGrafico" method="post">
+                <table border="1" cellpadding="8" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th colspan="2"><center><h4>Preencha as opções</h4></center></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td height="35">&nbsp;&nbsp;<b>Ação</b></td>
+                            <td><center><select name="sigla">
+                                        <!--<option value="" disabled selected>Selecione a ação</option>-->
+                                        <option value="MGLU3.SA">MGLU3.SA</option>
+                                    </select></center></td>
+                        </tr>
+                        <tr>
+                            <td height="35">&nbsp;&nbsp;<b>Data Inicial</b>&nbsp;&nbsp;&nbsp;</td>
+                            <td><center>&nbsp;&nbsp;<input type="date" name="dataInicial">&nbsp;&nbsp;</center></td>
+                        </tr>
+                        <tr>
+                            <td height="35">&nbsp;&nbsp;<b>Data Final</b></td>
+                            <td><center>&nbsp;&nbsp;<input type="date" name="dataFinal">&nbsp;&nbsp;</center></td>
+                        </tr>
+                        <tr>
+                            <td height="35">&nbsp;&nbsp;<b>Graficos</b></td>
+                            <td>&nbsp;&nbsp;<input type="checkbox" id="historicoPreco" name="historicoPreco" value="historicoPreco" checked>
+                                <label for="historicoPreco">Histórico de preços</label><br>
+                                &nbsp;&nbsp;<input type="checkbox" id="ema9" name="ema9" value="ema9" checked>
+                                <label for="ema9">EMA 9</label><br>
+                                &nbsp;&nbsp;<input type="checkbox" id="ema12" name="ema12" value="ema12" checked>
+                                <label for="ema12">EMA 12</label><br>
+                                &nbsp;&nbsp;<input type="checkbox" id="ema26" name="ema26" value="ema26" checked>
+                                <label for="ema26">EMA 26</label><br>
+                                &nbsp;&nbsp;<input type="checkbox" id="candleStick" name="candleStick" value="candleStick" checked>
+                                <label for="candleStick">Candle Stick</label><br>
+                                &nbsp;&nbsp;<input type="checkbox" id="macd" name="macd" value="macd" checked>
+                                <label for="macd">MACD</label>
+                                &nbsp;&nbsp;</td>
+                        </tr>
+                        <tr>
+                            <td height="35">&nbsp;&nbsp;<b>Ambiente</b></td>
+                            <td>&nbsp;&nbsp;<input type="radio" id="yahoo" name="ambiente" value="Y">Yahoo (1ano, com null)<br>
+                                &nbsp;&nbsp;<input type="radio" id="producao" name="ambiente" value="P">Produção (5 anos, com null)<br>
+                                &nbsp;&nbsp;<input type="radio" id="homologacao" name="ambiente" value="H">Homologação (2019-09, sem null)<br>
+                                &nbsp;&nbsp;<input type="radio" id="teste" name="ambiente" checked value="T">Teste (2021 em diante, sem null)&nbsp;&nbsp;<br>
+                            </td>
 
-                    </tr>
-                    <tr>
-                        <td colspan="2" height="55">
-                            <center><input type="reset">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                                <input type="submit" name="incluir" value="Gerar grafico">
-                            </center>
-                        </td>
-                    </tr>
-                </tbody>
+                        </tr>
+                        <tr>
+                            <td colspan="2" height="55">
+                                <center><input type="reset">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                    <input type="submit" name="incluir" value="Gerar grafico">
+                                </center>
+                            </td>
+                        </tr>
+                    </tbody>
 
-            </table>
-        </form>
+                </table>
+            </form>
         </center>
         <br>
         <br>

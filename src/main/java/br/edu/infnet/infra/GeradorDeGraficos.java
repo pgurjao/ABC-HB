@@ -10,18 +10,22 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.StringTokenizer;
-import org.jfree.chart.ChartUtilities;
+import org.jfree.chart.ChartUtils;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.DateAxis;
 import org.jfree.chart.axis.NumberAxis;
-import org.jfree.chart.axis.SegmentedTimeline;
+//import org.jfree.chart.axis.SegmentedTimeline;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.CandlestickRenderer;
+import org.jfree.chart.renderer.xy.HighLowRenderer;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
+import org.jfree.data.time.Day;
+import org.jfree.data.time.TimePeriod;
+import org.jfree.data.time.TimeTableXYDataset;
 import org.jfree.data.xy.AbstractXYDataset;
 import org.jfree.data.xy.DefaultOHLCDataset;
 import org.jfree.data.xy.OHLCDataItem;
@@ -45,8 +49,8 @@ public class GeradorDeGraficos {
 
     public ByteArrayOutputStream candleStick(Pesquisa pesquisa) {
 
-        String tituloGrafico;
         this.pesquisa = pesquisa;
+        String tituloGrafico = pesquisa.getSigla() + " CANDLESTICK";
 
         String stockSymbol = pesquisa.getSigla();
 
@@ -66,15 +70,19 @@ public class GeradorDeGraficos {
         renderer.setSeriesPaint(0, Color.BLACK);
         renderer.setDrawVolume(false);
         rangeAxis.setAutoRangeIncludesZero(false);
-        domainAxis.setTimeline(SegmentedTimeline.newMondayThroughFridayTimeline());
+//        domainAxis.setTimeline(SegmentedTimeline.newMondayThroughFridayTimeline());
+        domainAxis.setRange(pesquisa.getDataInicial(), pesquisa.getDataFinal());
+
+        DateFormat df = new SimpleDateFormat("dd/MMM/yyyy");
+        domainAxis.setDateFormatOverride(df);
 
         //Now create the chart and write PNG to OutputStream
-        JFreeChart chart = new JFreeChart(stockSymbol, null, mainPlot, false);
+        JFreeChart chart = new JFreeChart(tituloGrafico, null, mainPlot, false);
 
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         try {
 //            ChartUtilities.saveChartAsPNG(arquivo, chart, 500, 300); // esse metodo salva em arquivo, é preferível escrever no outputstream
-            ChartUtilities.writeChartAsPNG(outputStream, chart, largura, altura);
+            ChartUtils.writeChartAsPNG(outputStream, chart, largura, altura);
             System.out.println("[GeradorDeGraficos.CandleStick] Grafico salvo como PNG ");
         } catch (Exception e) {
             e.printStackTrace();
@@ -85,16 +93,23 @@ public class GeradorDeGraficos {
 
     public ByteArrayOutputStream historicoPreco(Pesquisa pesquisa) {
 
+        DateFormat df = new SimpleDateFormat("dd/MMM/yyyy");
         this.pesquisa = pesquisa;
 
         String stockSymbol = pesquisa.getSigla();
-        String tituloGrafico = pesquisa.getSigla();
+        String tituloGrafico = pesquisa.getSigla() + " HISTORICO DE PREÇO";
 
         DateAxis domainAxis = new DateAxis("Dia");
         NumberAxis rangeAxis = new NumberAxis("Preço");
-        XYLineAndShapeRenderer renderer = new XYLineAndShapeRenderer();
+//        XYLineAndShapeRenderer renderer = new XYLineAndShapeRenderer();
+//        SamplingXYLineRenderer renderer = new SamplingXYLineRenderer();
+//        XYDotRenderer renderer = new XYDotRenderer();
+//        XYDifferenceRenderer renderer = new XYDifferenceRenderer();
+        HighLowRenderer renderer = new HighLowRenderer();
 
         XYDataset dataset = getDataSet(stockSymbol);
+        XYSeriesCollection datasetHistPrec = new XYSeriesCollection();
+        TimeTableXYDataset datasetFinal = new TimeTableXYDataset();
 
         if (dataset == null) {
             tituloGrafico = "ERRO NA FORMATACAO DO ARQUIVO CSV! " + erro;
@@ -103,42 +118,102 @@ public class GeradorDeGraficos {
             ema9 = CalculadorDeMedias.calculateEmaValues(dadosParaEma, 9);
             ema12 = CalculadorDeMedias.calculateEmaValues(dadosParaEma, 12);
             ema26 = CalculadorDeMedias.calculateEmaValues(dadosParaEma, 26);
-            int i = 0;
-            for (double d : ema9) {
-                System.out.println("[GeradorDeGraficos.HistoricoDePreco] Ema 9[" + i + "] = " + ema9[i]);
-                i++;
+
+            XYSeries series1 = new XYSeries("Preco de fechamento");
+            XYSeries series2 = new XYSeries("EMA 9");
+            XYSeries series3 = new XYSeries("EMA 12");
+            XYSeries series4 = new XYSeries("EMA 26");
+
+//            System.out.println("Dataset.getItemCount = " + dataset.getItemCount(0));
+//            System.out.println("Dataset.SeriesCount = " + +dataset.getSeriesCount());
+//            Calendar calendar = Calendar.getInstance();
+//            try {
+//                calendar.setTime(df.parse(String.valueOf(dataset.getXValue(0, 1))));
+//            } catch (Exception e) {
+//                System.out.println("DEU RUIM NO PARSE!");
+//            }
+//            System.out.println("Time in mili = " + calendar.getTimeInMillis());
+            
+
+            System.out.println(" =======================================" );
+            datasetFinal.add(new Day(12,12,2019) , dataset.getYValue(0, 0), "historicoPreco");
+            datasetFinal.add(new Day(13,12,2019) , dataset.getYValue(0, 1), "historicoPreco");
+            datasetFinal.add(new Day(12,12,2019) , ema9[0], "ema9");
+            datasetFinal.add(new Day(12,12,2019) , ema12[0], "ema12");
+            datasetFinal.add(new Day(12,12,2019) , ema26[0], "ema26");
+            System.out.println(" ======================================" );
+            System.out.println(" DatasetFinal.getItemCount() = " + datasetFinal.getItemCount() );
+            System.out.println(" DatasetFinal.getItemCount(0) = " + datasetFinal.getItemCount(0));
+            System.out.println(" DatasetFinal.getItemCount(1) = " + datasetFinal.getItemCount(1));
+            System.out.println(" DatasetFinal.getItemCount(2) = " + datasetFinal.getItemCount(2));
+            System.out.println(" DatasetFinal.getItemCount(3) = " + datasetFinal.getItemCount(3));
+            System.out.println(" DatasetFinal.getSeriesCount() = " + datasetFinal.getSeriesCount() );
+            System.out.println(" DatasetFinal.seriesKey0 = " + datasetFinal.getSeriesKey(0) );
+            System.out.println(" DatasetFinal.seriesKey1 = " + datasetFinal.getSeriesKey(1) );
+            System.out.println(" DatasetFinal.seriesKey2 = " + datasetFinal.getSeriesKey(2) );
+            System.out.println(" DatasetFinal.seriesKey3 = " + datasetFinal.getSeriesKey(3) );
+            System.out.println(" DatasetFinal.getStartXValue = " + datasetFinal.getStartXValue(0, 0) );
+            System.out.println(" DatasetFinal.getStartYValue = " + datasetFinal.getStartYValue(0,0) );
+            System.out.println(" DatasetFinal.getStartXValue = " + datasetFinal.getXValue(0, 1) ); // APRENDER A TRANSFORMAR DOUBLE TO DATE <==============================
+            System.out.println(" DatasetFinal.getStartYValue = " + datasetFinal.getYValue(0,1) );
+            System.out.println(" ====================================== =XY" );
+
+//            for (int i = 0; i < ema9.length; i++) {
+//
+//                series1.add(i, dataset.getYValue(0, i));
+//                System.out.println("getYValue[" + i + "] = " + dataset.getYValue(0, i));
+//                System.out.println("getXValue[" + i + "] = " + dataset.getXValue(0, i));
+//            }
+//            System.out.println("ema9.length = " + ema9.length);
+
+            for (int i = 0; i < ema9.length; i++) {
+                series2.add(i, ema9[i]);
             }
-            i = 0;
-            for (double d : ema12) {
-                System.out.println("[GeradorDeGraficos.HistoricoDePreco] Ema 12[" + i + "] = " + ema12[i]);
-                i++;
+
+            for (int i = 0; i < ema12.length; i++) {
+                series3.add(i, ema12[i]);
             }
-            i = 0;
-            for (double d : ema26) {
-                System.out.println("[GeradorDeGraficos.HistoricoDePreco] Ema 26[" + i + "] = " + ema26[i]);
-                i++;
+
+            for (int i = 0; i < ema26.length; i++) {
+                series4.add(i, ema26[i]);
             }
+
+            datasetHistPrec.addSeries(series1);
+//            datasetHistPrec.addSeries(series2);
+//            datasetHistPrec.addSeries(series3);
+//            datasetHistPrec.addSeries(series4);
+
         }
 
-        XYPlot mainPlot = new XYPlot(dataset, domainAxis, rangeAxis, renderer);
+        XYPlot mainPlot = new XYPlot(datasetHistPrec, domainAxis, rangeAxis, renderer);
 
+        int roxo = -9814343;
+        int laranja = -878264;
         //Do some setting up, see the API Doc
         renderer.setSeriesPaint(0, Color.BLACK);
-        renderer.setSeriesPaint(1, Color.RED);
+        renderer.setSeriesPaint(1, Color.decode(String.valueOf(roxo)));
+        renderer.setSeriesPaint(2, Color.decode(String.valueOf(laranja)));
+        renderer.setSeriesPaint(3, Color.CYAN);
 //        renderer.setDrawVolume(false);
         rangeAxis.setAutoRangeIncludesZero(false);
 
-        domainAxis.setTimeline(SegmentedTimeline.newMondayThroughFridayTimeline());
+//        SETA A ESCALA DO EIXO X
+//        domainAxis.setTimeline(SegmentedTimeline.newMondayThroughFridayTimeline());
+        domainAxis.setRange(pesquisa.getDataInicial(), pesquisa.getDataFinal());
+//        domainAxis.setRange(0, ema9.length);
 
+        domainAxis.setDateFormatOverride(df);
+
+//        domainAxis.setAutoRange(true);
         //Now create the chart and write PNG to OutputStream
         JFreeChart chart = new JFreeChart(tituloGrafico, null, mainPlot, true);
 
         //Escreve o grafico em um ByteArrayOutputStream para ser retornado pelo controller, via GET, para o JSP exibir a imagem
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         try {
-            ChartUtilities.writeChartAsPNG(outputStream, chart, largura, altura);
+            ChartUtils.writeChartAsPNG(outputStream, chart, largura, altura);
         } catch (Exception e) {
-            System.out.println("[HistoricoDePreco] Exception ao gerar grafico HistoricoDePreco!");
+            System.out.println("[HistoricoDePreco] Exception na etapa final de geracao do grafico!");
             e.printStackTrace();
         }
         return outputStream;
@@ -150,7 +225,7 @@ public class GeradorDeGraficos {
         this.pesquisa = pesquisa;
 
         String stockSymbol = pesquisa.getSigla();
-        String tituloGrafico = pesquisa.getSigla();
+        String tituloGrafico = pesquisa.getSigla() + " MACD";
 
         DateAxis domainAxis = new DateAxis("Dia");
         NumberAxis rangeAxis = new NumberAxis("Valor");
@@ -162,16 +237,17 @@ public class GeradorDeGraficos {
             tituloGrafico = "ERRO NA FORMATACAO DO ARQUIVO CSV! " + erro;
             System.out.println("[GeradorDeGraficos.macdChart] Erro na formatacao do arquivo CSV lido. Por favor verifique a estrutura do arquivo.");
         } else {
-            ema9 = CalculadorDeMedias.calculateEmaValues(dadosParaEma, 9);
+//            ema9 = CalculadorDeMedias.calculateEmaValues(dadosParaEma, 9);
             ema12 = CalculadorDeMedias.calculateEmaValues(dadosParaEma, 12);
             ema26 = CalculadorDeMedias.calculateEmaValues(dadosParaEma, 26);
             macd = new double[ema12.length];
 
             for (int i = 0; i < ema12.length; i++) {
                 macd[i] = ema12[i] - ema26[i];
+
+//                EXIBE ARRAY COM MACD CALCULADO
                 System.out.println("[GeradorDeGraficos.macdChart] Macd[" + i + "] = " + macd[i]);
             }
-
         }
 
         XYSeriesCollection datasetMacd = new XYSeriesCollection();
@@ -179,7 +255,8 @@ public class GeradorDeGraficos {
 
         for (int i = 0; i < macd.length; i++) {
             series1.add(i, macd[i]);
-            System.out.println("[GeradorDeGraficos.macdChart] series1.add = " + i + "-" + macd[i]);
+//            EXIBE OS VALORES DE MACD SENDO INSERIDOS NO 'SERIES1'
+//            System.out.println("[GeradorDeGraficos.macdChart] series1.add = " + i + ": " + macd[i]);
         }
         datasetMacd.addSeries(series1);
 
@@ -191,7 +268,11 @@ public class GeradorDeGraficos {
 //        renderer.setDrawVolume(false);
         rangeAxis.setAutoRangeIncludesZero(false);
 
-        domainAxis.setTimeline(SegmentedTimeline.newMondayThroughFridayTimeline());
+//        domainAxis.setTimeline(SegmentedTimeline.newMondayThroughFridayTimeline());
+        domainAxis.setRange(pesquisa.getDataInicial(), pesquisa.getDataFinal());
+
+        DateFormat df = new SimpleDateFormat("dd/MMM/yyyy");
+        domainAxis.setDateFormatOverride(df);
 
         //Now create the chart and write PNG to OutputStream
         JFreeChart chart = new JFreeChart(tituloGrafico, null, mainPlot, true);
@@ -199,7 +280,7 @@ public class GeradorDeGraficos {
         //Escreve o grafico em um ByteArrayOutputStream para ser retornado pelo controller, via GET, para o JSP exibir a imagem
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         try {
-            ChartUtilities.writeChartAsPNG(outputStream, chart, largura, altura);
+            ChartUtils.writeChartAsPNG(outputStream, chart, largura, altura);
         } catch (Exception e) {
             System.out.println("[macdChart] Exception ao gerar grafico HistoricoDePreco!");
             e.printStackTrace();
@@ -213,7 +294,7 @@ public class GeradorDeGraficos {
         this.pesquisa = pesquisa;
 
         String stockSymbol = pesquisa.getSigla();
-        String tituloGrafico = pesquisa.getSigla();
+        String tituloGrafico = pesquisa.getSigla() + " EMA 9";
 
         DateAxis domainAxis = new DateAxis("Dia");
         NumberAxis rangeAxis = new NumberAxis("Valor");
@@ -226,31 +307,66 @@ public class GeradorDeGraficos {
             System.out.println("[GeradorDeGraficos.macdChart] Erro na formatacao do arquivo CSV lido. Por favor verifique a estrutura do arquivo.");
         } else {
             ema9 = CalculadorDeMedias.calculateEmaValues(dadosParaEma, 9);
+            ema12 = CalculadorDeMedias.calculateEmaValues(dadosParaEma, 12);
+            ema26 = CalculadorDeMedias.calculateEmaValues(dadosParaEma, 26);
         }
 
-        XYSeriesCollection datasetMacd = new XYSeriesCollection();
-        XYSeries series1 = new XYSeries("EMA 9  chart");
+        XYSeriesCollection datasetEma9 = new XYSeriesCollection();
+        XYSeries series1 = new XYSeries("EMA 9 chart");
+        XYSeries series2 = new XYSeries("EMA 12 chart");
+        XYSeries series3 = new XYSeries("EMA 26 chart");
+        XYSeries series4 = new XYSeries("Preco fechamento");
 
-        datasetMacd.addSeries(series1);
+        for (int i = 0; i < ema9.length; i++) {
+            series1.add(i, ema9[i]);
+        }
 
-        XYPlot mainPlot = new XYPlot(datasetMacd, domainAxis, rangeAxis, renderer);
+        for (int i = 0; i < ema12.length; i++) {
+            series2.add(i, ema12[i]);
+        }
+
+        for (int i = 0; i < ema26.length; i++) {
+            series3.add(i, ema26[i]);
+        }
+
+        for (int i = 0; i < ema9.length; i++) {
+            series4.add(i, dataset.getYValue(i, i));
+        }
+
+        datasetEma9.addSeries(series1);
+        datasetEma9.addSeries(series2);
+        datasetEma9.addSeries(series3);
+        datasetEma9.addSeries(series4);
+
+        XYPlot mainPlot = new XYPlot(datasetEma9, domainAxis, rangeAxis, renderer);
+
+//        
+        int roxo = -9814343;
+        int laranja = -878264;
 
         //Do some setting up, see the API Doc
-        renderer.setSeriesPaint(0, Color.BLUE);
-        renderer.setSeriesPaint(1, Color.RED);
+        renderer.setSeriesPaint(0, Color.decode(String.valueOf(roxo))); // SET A COR DA LINHA 0 COMO ROXO
+        renderer.setSeriesPaint(1, Color.decode(String.valueOf(laranja))); // SET A COR DA LINHA 0 COMO LARANJA
+        renderer.setSeriesPaint(2, Color.CYAN);
+        renderer.setSeriesPaint(3, Color.BLACK);
 //        renderer.setDrawVolume(false);
         rangeAxis.setAutoRangeIncludesZero(false);
 
-        domainAxis.setTimeline(SegmentedTimeline.newMondayThroughFridayTimeline());
+//        domainAxis.setTimeline(SegmentedTimeline.newMondayThroughFridayTimeline());
+//        domainAxis.setRange(pesquisa.getDataInicial(), pesquisa.getDataFinal());
+        domainAxis.setRange(0, ema9.length);
 
-        tituloGrafico = "EMA 9 chart";
+        DateFormat df = new SimpleDateFormat("dd/MMM/yyyy");
+        domainAxis.setDateFormatOverride(df);
+
+//        tituloGrafico = "EMA 9 chart";
         //Now create the chart and write PNG to OutputStream
         JFreeChart chart = new JFreeChart(tituloGrafico, null, mainPlot, true);
 
         //Escreve o grafico em um ByteArrayOutputStream para ser retornado pelo controller, via GET, para o JSP exibir a imagem
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         try {
-            ChartUtilities.writeChartAsPNG(outputStream, chart, largura, altura);
+            ChartUtils.writeChartAsPNG(outputStream, chart, largura, altura);
         } catch (Exception e) {
             System.out.println("[macdChart] Exception ao gerar grafico HistoricoDePreco!");
             e.printStackTrace();
@@ -264,7 +380,7 @@ public class GeradorDeGraficos {
         this.pesquisa = pesquisa;
 
         String stockSymbol = pesquisa.getSigla();
-        String tituloGrafico = pesquisa.getSigla();
+        String tituloGrafico = pesquisa.getSigla() + " EMA 12";
 
         DateAxis domainAxis = new DateAxis("Dia");
         NumberAxis rangeAxis = new NumberAxis("Valor");
@@ -279,29 +395,33 @@ public class GeradorDeGraficos {
             ema12 = CalculadorDeMedias.calculateEmaValues(dadosParaEma, 12);
         }
 
-        XYSeriesCollection datasetMacd = new XYSeriesCollection();
+        XYSeriesCollection datasetEma12 = new XYSeriesCollection();
         XYSeries series1 = new XYSeries("EMA 12 chart");
 
-        datasetMacd.addSeries(series1);
+        datasetEma12.addSeries(series1);
 
-        XYPlot mainPlot = new XYPlot(datasetMacd, domainAxis, rangeAxis, renderer);
+        XYPlot mainPlot = new XYPlot(datasetEma12, domainAxis, rangeAxis, renderer);
 
         //Do some setting up, see the API Doc
         renderer.setSeriesPaint(0, Color.RED);
-        renderer.setSeriesPaint(1, Color.RED);
 //        renderer.setDrawVolume(false);
         rangeAxis.setAutoRangeIncludesZero(false);
 
-        domainAxis.setTimeline(SegmentedTimeline.newMondayThroughFridayTimeline());
+//        domainAxis.setTimeline(SegmentedTimeline.newMondayThroughFridayTimeline());
+//        domainAxis.setRange(pesquisa.getDataInicial(), pesquisa.getDataFinal());
+        domainAxis.setRange(0 ,ema12.length);
 
-        tituloGrafico = "EMA 12 chart";
+        DateFormat df = new SimpleDateFormat("dd/MMM/yyyy");
+        domainAxis.setDateFormatOverride(df);
+
+//        tituloGrafico = "EMA 12 chart";
         //Now create the chart and write PNG to OutputStream
         JFreeChart chart = new JFreeChart(tituloGrafico, null, mainPlot, true);
 
         //Escreve o grafico em um ByteArrayOutputStream para ser retornado pelo controller, via GET, para o JSP exibir a imagem
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         try {
-            ChartUtilities.writeChartAsPNG(outputStream, chart, largura, altura);
+            ChartUtils.writeChartAsPNG(outputStream, chart, largura, altura);
         } catch (Exception e) {
             System.out.println("[macdChart] Exception ao gerar grafico HistoricoDePreco!");
             e.printStackTrace();
@@ -315,7 +435,7 @@ public class GeradorDeGraficos {
         this.pesquisa = pesquisa;
 
         String stockSymbol = pesquisa.getSigla();
-        String tituloGrafico = pesquisa.getSigla();
+        String tituloGrafico = pesquisa.getSigla() + " EMA 26";
 
         DateAxis domainAxis = new DateAxis("Dia");
         NumberAxis rangeAxis = new NumberAxis("Valor");
@@ -330,15 +450,16 @@ public class GeradorDeGraficos {
             ema26 = CalculadorDeMedias.calculateEmaValues(dadosParaEma, 26);
             // ===================================== CONSERTAR AQUI A EXCEPTION QUANDO ARQUIVO CSV ESTÁ CORROMPIDO!! =====================
         }
-        XYSeriesCollection datasetMacd = new XYSeriesCollection();
+        XYSeriesCollection datasetEma26 = new XYSeriesCollection();
         XYSeries series1 = new XYSeries("EMA 9  chart");
 
         for (int i = 0; i < ema26.length; i++) {
             series1.add(i, ema26[i]);
-            System.out.println("[GeradorDeGraficos.macdChart] series1.add = " + i + "-" + ema26[i]);
+//            EXIBE OS VALORES DE 'ema26' SENDO INSERIDOS NO 'SERIES1'
+//            System.out.println("[GeradorDeGraficos.ema26Chart] series1.add = " + i + "-" + ema26[i]);
         }
-        datasetMacd.addSeries(series1);
-        XYPlot mainPlot = new XYPlot(datasetMacd, domainAxis, rangeAxis, renderer);
+        datasetEma26.addSeries(series1);
+        XYPlot mainPlot = new XYPlot(datasetEma26, domainAxis, rangeAxis, renderer);
 
         //Do some setting up, see the API Doc
         renderer.setSeriesPaint(0, Color.MAGENTA);
@@ -346,16 +467,22 @@ public class GeradorDeGraficos {
 //        renderer.setDrawVolume(false);
         rangeAxis.setAutoRangeIncludesZero(false);
 
-        domainAxis.setTimeline(SegmentedTimeline.newMondayThroughFridayTimeline());
+//        Timeline tm;
+//        domainAxis.
+//        domainAxis.setTimeline(SegmentedTimeline.newMondayThroughFridayTimeline());
+        domainAxis.setRange(pesquisa.getDataInicial(), pesquisa.getDataFinal());
 
-        tituloGrafico = "EMA 26 chart";
+        DateFormat df = new SimpleDateFormat("dd/MMM/yyyy");
+        domainAxis.setDateFormatOverride(df);
+
+//        tituloGrafico = "EMA 26 chart";
         //Now create the chart and write PNG to OutputStream
         JFreeChart chart = new JFreeChart(tituloGrafico, null, mainPlot, true);
 
         //Escreve o grafico em um ByteArrayOutputStream para ser retornado pelo controller, via GET, para o JSP exibir a imagem
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         try {
-            ChartUtilities.writeChartAsPNG(outputStream, chart, largura, altura);
+            ChartUtils.writeChartAsPNG(outputStream, chart, largura, altura);
         } catch (Exception e) {
             System.out.println("[macdChart] Exception ao gerar grafico HistoricoDePreco!");
             e.printStackTrace();
@@ -366,9 +493,8 @@ public class GeradorDeGraficos {
 
     protected AbstractXYDataset getDataSet(String stockSymbol) {
 
-        XYSeriesCollection dataset = new XYSeriesCollection();
-
-//This is the dataset we are going to create
+//        XYSeriesCollection dataset = new XYSeriesCollection();
+        //This is the dataset we are going to create
         DefaultOHLCDataset result = null;
 
         //This is the data needed for the dataset
@@ -407,8 +533,6 @@ public class GeradorDeGraficos {
             return null;
         }
 
-        OHLCDataItem ohlcDataInicial = new OHLCDataItem(date, 0.0, 0.0, 0.0, 0.0, 0.0);
-
         try {
             String strUrl;
             String ambiente = pesquisa.getAmbiente();
@@ -438,15 +562,10 @@ public class GeradorDeGraficos {
             }
             URL url = new URL(strUrl);
             BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()));
-
-            List<Double> dadosFechamento = new ArrayList<>();
-            List<Date> datasFechamento = new ArrayList<>();
-            List<Date> subListaDatasFechamento = new ArrayList<>();
-
             String inputLine;
             in.readLine();
 
-            while ((inputLine = in.readLine()) != null) {
+            while ((inputLine = in.readLine()) != null && date.compareTo(dataFinal) < 0) {
                 StringTokenizer st = new StringTokenizer(inputLine, ",");
 
                 date = df.parse(st.nextToken());
@@ -457,56 +576,33 @@ public class GeradorDeGraficos {
                 double volume = Double.parseDouble(st.nextToken());
                 double adjClose = Double.parseDouble(st.nextToken());
 
-//                dadosFechamento.add(close);
-//                datasFechamento.add(date);
-//
-//                System.out.println("[GeradorDeGraficos] Date = " + df.format(date));
+                System.out.println("[getdata] Data = " + df.format(date));
+
                 if (date.compareTo(dataInicial) >= 0 && date.compareTo(dataFinal) <= 0) {
                     quantidadeRegistros++;
-                    System.out.println("[GeradorDeGraficos] Se passaram " + quantidadeRegistros + " dia(s) desde a dataInicial " + df.format(dataInicial));
+//                    System.out.println("[GeradorDeGraficos] Se passaram " + quantidadeRegistros + " registros(s) desde a dataInicial " + df.format(dataInicial));
                     dataLocalizada = true;
-                    System.out.println("[GeradorDeGraficos] " + df.format(dataInicial) + " <= '" + df.format(date) + "' <= " + df.format(dataFinal));
+//                    System.out.println("[GeradorDeGraficos] Dentro do RANGE " + df.format(dataInicial) + " <= '" + df.format(date) + "' <= " + df.format(dataFinal));
 
                     if (date.compareTo(dataInicial) == 0) {
                         indiceDataInicial = dataItems.size();
                     }
-
-//                    if (dadosFechamento.size() >= 10) {
-//                        dadosSma10Dias = dadosFechamento.subList((dadosFechamento.size()) - 10, dadosFechamento.size());
-//                        subListaDatasFechamento = datasFechamento.subList((datasFechamento.size()) - 10, datasFechamento.size());
-//
-//                        System.out.println("[GeradorDeGraficos] dadosSma10Dias = " + dadosSma10Dias.toString());
-//                        System.out.println("[GeradorDeGraficos] DatasFechament = ["
-//                                + df.format(datasFechamento.get(datasFechamento.size() - 10)) + ", "
-//                                + df.format(datasFechamento.get(datasFechamento.size() - 9)) + ", "
-//                                + df.format(datasFechamento.get(datasFechamento.size() - 8)) + ", "
-//                                + df.format(datasFechamento.get(datasFechamento.size() - 7)) + ", "
-//                                + df.format(datasFechamento.get(datasFechamento.size() - 6)) + ", "
-//                                + df.format(datasFechamento.get(datasFechamento.size() - 5)) + ", "
-//                                + df.format(datasFechamento.get(datasFechamento.size() - 4)) + ", "
-//                                + df.format(datasFechamento.get(datasFechamento.size() - 3)) + ", "
-//                                + df.format(datasFechamento.get(datasFechamento.size() - 2)) + ", "
-//                                + df.format(datasFechamento.get(datasFechamento.size() - 1))
-//                                + "]"
-//                        );
-//                    }
-//                }
                 }
 
                 if (date.compareTo(dataFinal) <= 0) {
                     OHLCDataItem item = new OHLCDataItem(date, open, high, low, close, volume);
-                    System.out.println("[GeradorDeGraficos] Adicionando registros a lista (data =" + df.format(item.getDate()) + ")");
+//                    System.out.println("[GeradorDeGraficos] Adicionando registros a lista (data =" + df.format(item.getDate()) + ")");
                     dataItems.add(item);
                 }
             }
             in.close();
         } catch (ParseException e) {
-            erro = "Alguma data com formatacao invalida";
+            erro = "Alguma 'date' com formatacao invalida";
             System.out.println("[GeradorDeGraficos] ParseException ao tentar ler o CSV, verifique a formatacao do arquivo CSV lido");
 //            e.printStackTrace();
             return null;
         } catch (NumberFormatException e) {
-            erro = "Algum double com formatacao invalida";
+            erro = "Algum 'double' com formatacao invalida";
 
             if (date.compareTo(dataInicial) >= 0 && date.compareTo(dataFinal) <= 0) {
                 System.out.println("[GeradorDeGraficos] NumberFormatException linha '" + df.format(date) + "' ao tentar ler o CSV DENTRO do range das datas iniciais e finais");
@@ -534,40 +630,23 @@ public class GeradorDeGraficos {
             return null;
         }
 
-//        int i = dataItems.indexOf(ohlcDataInicial);
-//        if (i > 2) {
-//            System.out.println("[GeradorDeGraficos] dataItems.get(i) = " + df.format(dataItems.get(i).getDate()));
-//            System.out.println("[GeradorDeGraficos] i = " + i);
-//
-//            System.out.println("[GeradorDeGraficos] dataItems.get(i-2) " + df.format(dataItems.get(i - 2).getDate()));
-//            System.out.println("[GeradorDeGraficos] dataItems.get(i-1) " + df.format(dataItems.get(i - 1).getDate()));
-//            System.out.println("[GeradorDeGraficos] dataItems.get(i) " + df.format(dataItems.get(i).getDate()));
-//            System.out.println("[GeradorDeGraficos] dataItems.get(i+1) " + df.format(dataItems.get(i + 1).getDate()));
-//            System.out.println("[GeradorDeGraficos] dataItems.get(i+2) " + df.format(dataItems.get(i + 2).getDate()));
-//        } else {
-//            System.out.println("[GeradorDeGraficos] indice i = -1");
-//        }
         if (indiceDataInicial >= 9) {
             podeCalcularEma = true;
 
             for (int i = indiceDataInicial - 9; i <= indiceDataInicial; i++) {
                 dadosSma10Dias.add((Double) dataItems.get(i).getClose());
             }
-
-//            for (Double d : dadosSma10Dias) {
-//                System.out.println("[GeradorDeGraficos] dadosSma10Dias = " + d);
-//            }
         }
 
         // CRIAR SUBLISTA APENAS COM DADOS PARA CRIAR O GRAFICO
         List<OHLCDataItem> dadosParaGrafico = new ArrayList<OHLCDataItem>();
         dadosParaGrafico = dataItems.subList(dataItems.size() - (quantidadeRegistros + 1), dataItems.size());
 
-        System.out.println("[GeradorDeGraficos] ======================================== ");
-        for (OHLCDataItem ohlc : dadosParaGrafico) {
-            System.out.println("[GeradorDeGraficos] OHLC = " + df.format(ohlc.getDate()) + ", close = " + ohlc.getClose());
-        }
-
+        // EXIBE SUBLISTA CRIADA A PARTIR DA LEITURA DO CSV
+//        System.out.println("[GeradorDeGraficos] ======================================== ");
+//        for (OHLCDataItem ohlc : dadosParaGrafico) {
+//            System.out.println("[GeradorDeGraficos] OHLC = " + df.format(ohlc.getDate()) + ", close = " + ohlc.getClose());
+//        }
 //        System.out.println("[GeradorDeGraficos] Registro (" + indiceDataInicial + ") Data Inicial = " + df.format(dataItems.get(indiceDataInicial).getDate()));
         // CRIANDO ARRAY DE DOUBLE PARA ENVIAR PARA CalculadorDeMedias
         dadosParaEma = new double[dadosParaGrafico.size()];
@@ -581,15 +660,13 @@ public class GeradorDeGraficos {
 //            System.out.println("[GeradorDeGraficos] dadosParaEma[] = " + d);
 //        }
 
-        double[] testeEma = CalculadorDeMedias.calculateEmaValues(dadosParaEma, 9);
-        // EXIBE O ARRAY CRIADO
-        for (double d : testeEma) {
-            System.out.println("[GeradorDeGraficos] testeEma = " + d);
-        }
+//        // EXIBE O ARRAY CRIADO 'TESTEEMA'
+//        double[] testeEma = CalculadorDeMedias.calculateEmaValues(dadosParaEma, 9);
+//        for (double d : testeEma) {
+//            System.out.println("[GeradorDeGraficos] testeEma = " + d);
+//        }
         // OS DADOS DO YAHOO SAO DO MAIS NOVO PARA O MAIS ANTIGO. EH PRECISO REVERTER A LISTA PARA A ORDENACAO MAIS ANTIGO PARA O MAIS NOVO
-
-        Collections.reverse(dadosParaGrafico);
-
+//        Collections.reverse(dadosParaGrafico);
         // CONVERTENDO LISTA PARA UM ARRAY
         OHLCDataItem[] data = dadosParaGrafico.toArray(new OHLCDataItem[dadosParaGrafico.size()]);
 
