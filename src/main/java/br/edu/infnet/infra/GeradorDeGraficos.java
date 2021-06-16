@@ -99,26 +99,25 @@ public class GeradorDeGraficos {
         if (dataset == null) {
             tituloGrafico = "ERRO NA FORMATACAO DO ARQUIVO CSV! " + erro;
             System.out.println("[GeradorDeGraficos.HistoricoDePreco] Erro na formatacao do arquivo CSV lido. Por favor verifique a estrutura do arquivo.");
-        }
-
-        ema9 = CalculadorDeMedias.calculateEmaValues(dadosParaEma, 9);
-        ema12 = CalculadorDeMedias.calculateEmaValues(dadosParaEma, 12);
-        ema26 = CalculadorDeMedias.calculateEmaValues(dadosParaEma, 26);
-
-        int i = 0;
-        for (double d : ema9) {
-            System.out.println("[GeradorDeGraficos.HistoricoDePreco] Ema 9[" + i + "] = " + ema9[i]);
-            i++;
-        }
-        i = 0;
-        for (double d : ema12) {
-            System.out.println("[GeradorDeGraficos.HistoricoDePreco] Ema 12[" + i + "] = " + ema12[i]);
-            i++;
-        }
-        i = 0;
-        for (double d : ema26) {
-            System.out.println("[GeradorDeGraficos.HistoricoDePreco] Ema 26[" + i + "] = " + ema26[i]);
-            i++;
+        } else {
+            ema9 = CalculadorDeMedias.calculateEmaValues(dadosParaEma, 9);
+            ema12 = CalculadorDeMedias.calculateEmaValues(dadosParaEma, 12);
+            ema26 = CalculadorDeMedias.calculateEmaValues(dadosParaEma, 26);
+            int i = 0;
+            for (double d : ema9) {
+                System.out.println("[GeradorDeGraficos.HistoricoDePreco] Ema 9[" + i + "] = " + ema9[i]);
+                i++;
+            }
+            i = 0;
+            for (double d : ema12) {
+                System.out.println("[GeradorDeGraficos.HistoricoDePreco] Ema 12[" + i + "] = " + ema12[i]);
+                i++;
+            }
+            i = 0;
+            for (double d : ema26) {
+                System.out.println("[GeradorDeGraficos.HistoricoDePreco] Ema 26[" + i + "] = " + ema26[i]);
+                i++;
+            }
         }
 
         XYPlot mainPlot = new XYPlot(dataset, domainAxis, rangeAxis, renderer);
@@ -162,33 +161,32 @@ public class GeradorDeGraficos {
         if (dataset == null) {
             tituloGrafico = "ERRO NA FORMATACAO DO ARQUIVO CSV! " + erro;
             System.out.println("[GeradorDeGraficos.macdChart] Erro na formatacao do arquivo CSV lido. Por favor verifique a estrutura do arquivo.");
-        }
+        } else {
+            ema9 = CalculadorDeMedias.calculateEmaValues(dadosParaEma, 9);
+            ema12 = CalculadorDeMedias.calculateEmaValues(dadosParaEma, 12);
+            ema26 = CalculadorDeMedias.calculateEmaValues(dadosParaEma, 26);
+            macd = new double[ema12.length];
 
-        ema9 = CalculadorDeMedias.calculateEmaValues(dadosParaEma, 9);
-        ema12 = CalculadorDeMedias.calculateEmaValues(dadosParaEma, 12);
-        ema26 = CalculadorDeMedias.calculateEmaValues(dadosParaEma, 26);
-        macd = new double[ema12.length];
+            for (int i = 0; i < ema12.length; i++) {
+                macd[i] = ema12[i] - ema26[i];
+                System.out.println("[GeradorDeGraficos.macdChart] Macd[" + i + "] = " + macd[i]);
+            }
 
-        for (int i = 0; i < ema12.length; i++) {
-            macd[i] = ema12[i] - ema26[i];
-            System.out.println("[GeradorDeGraficos.macdChart] Macd[" + i + "] = " + macd[i]);
         }
 
         XYSeriesCollection datasetMacd = new XYSeriesCollection();
         XYSeries series1 = new XYSeries("MACD line");
-        
+
         for (int i = 0; i < macd.length; i++) {
-            series1.add( i, macd[i]);
+            series1.add(i, macd[i]);
             System.out.println("[GeradorDeGraficos.macdChart] series1.add = " + i + "-" + macd[i]);
         }
         datasetMacd.addSeries(series1);
 
-        
-
         XYPlot mainPlot = new XYPlot(datasetMacd, domainAxis, rangeAxis, renderer);
 
         //Do some setting up, see the API Doc
-        renderer.setSeriesPaint(0, Color.BLACK);
+        renderer.setSeriesPaint(0, Color.GREEN);
         renderer.setSeriesPaint(1, Color.RED);
 //        renderer.setDrawVolume(false);
         rangeAxis.setAutoRangeIncludesZero(false);
@@ -209,7 +207,7 @@ public class GeradorDeGraficos {
         return outputStream;
 
     } // fim do macdchart
-    
+
     public ByteArrayOutputStream ema9Chart(Pesquisa pesquisa) {
 
         this.pesquisa = pesquisa;
@@ -226,37 +224,25 @@ public class GeradorDeGraficos {
         if (dataset == null) {
             tituloGrafico = "ERRO NA FORMATACAO DO ARQUIVO CSV! " + erro;
             System.out.println("[GeradorDeGraficos.macdChart] Erro na formatacao do arquivo CSV lido. Por favor verifique a estrutura do arquivo.");
+        } else {
+            ema9 = CalculadorDeMedias.calculateEmaValues(dadosParaEma, 9);
         }
-
-        ema9 = CalculadorDeMedias.calculateEmaValues(dadosParaEma, 9);
-
-//        for (int i = 0; i < ema12.length; i++) {
-//            macd[i] = ema12[i] - ema26[i];
-//            System.out.println("[GeradorDeGraficos.macdChart] Macd[" + i + "] = " + macd[i]);
-//        }
 
         XYSeriesCollection datasetMacd = new XYSeriesCollection();
         XYSeries series1 = new XYSeries("EMA 9  chart");
-        
-        for (int i = 0; i < ema9.length; i++) {
-            series1.add( i, ema9[i]);
-            System.out.println("[GeradorDeGraficos.macdChart] series1.add = " + i + "-" + ema9[i]);
-        }
-        datasetMacd.addSeries(series1);
 
-        
+        datasetMacd.addSeries(series1);
 
         XYPlot mainPlot = new XYPlot(datasetMacd, domainAxis, rangeAxis, renderer);
 
         //Do some setting up, see the API Doc
-        renderer.setSeriesPaint(0, Color.BLACK);
+        renderer.setSeriesPaint(0, Color.BLUE);
         renderer.setSeriesPaint(1, Color.RED);
 //        renderer.setDrawVolume(false);
         rangeAxis.setAutoRangeIncludesZero(false);
 
         domainAxis.setTimeline(SegmentedTimeline.newMondayThroughFridayTimeline());
 
-        
         tituloGrafico = "EMA 9 chart";
         //Now create the chart and write PNG to OutputStream
         JFreeChart chart = new JFreeChart(tituloGrafico, null, mainPlot, true);
@@ -272,7 +258,7 @@ public class GeradorDeGraficos {
         return outputStream;
 
     } // fim do ema9
-    
+
     public ByteArrayOutputStream ema12Chart(Pesquisa pesquisa) {
 
         this.pesquisa = pesquisa;
@@ -289,37 +275,25 @@ public class GeradorDeGraficos {
         if (dataset == null) {
             tituloGrafico = "ERRO NA FORMATACAO DO ARQUIVO CSV! " + erro;
             System.out.println("[GeradorDeGraficos.macdChart] Erro na formatacao do arquivo CSV lido. Por favor verifique a estrutura do arquivo.");
+        } else {
+            ema12 = CalculadorDeMedias.calculateEmaValues(dadosParaEma, 12);
         }
-
-        ema12 = CalculadorDeMedias.calculateEmaValues(dadosParaEma, 12);
-
-//        for (int i = 0; i < ema12.length; i++) {
-//            macd[i] = ema12[i] - ema26[i];
-//            System.out.println("[GeradorDeGraficos.macdChart] Macd[" + i + "] = " + macd[i]);
-//        }
 
         XYSeriesCollection datasetMacd = new XYSeriesCollection();
         XYSeries series1 = new XYSeries("EMA 12 chart");
-        
-        for (int i = 0; i < ema12.length; i++) {
-            series1.add( i, ema12[i]);
-            System.out.println("[GeradorDeGraficos.macdChart] series1.add = " + i + "-" + ema12[i]);
-        }
-        datasetMacd.addSeries(series1);
 
-        
+        datasetMacd.addSeries(series1);
 
         XYPlot mainPlot = new XYPlot(datasetMacd, domainAxis, rangeAxis, renderer);
 
         //Do some setting up, see the API Doc
-        renderer.setSeriesPaint(0, Color.BLACK);
+        renderer.setSeriesPaint(0, Color.RED);
         renderer.setSeriesPaint(1, Color.RED);
 //        renderer.setDrawVolume(false);
         rangeAxis.setAutoRangeIncludesZero(false);
 
         domainAxis.setTimeline(SegmentedTimeline.newMondayThroughFridayTimeline());
 
-        
         tituloGrafico = "EMA 12 chart";
         //Now create the chart and write PNG to OutputStream
         JFreeChart chart = new JFreeChart(tituloGrafico, null, mainPlot, true);
@@ -335,7 +309,7 @@ public class GeradorDeGraficos {
         return outputStream;
 
     } // fim do ema12
-    
+
     public ByteArrayOutputStream ema26Chart(Pesquisa pesquisa) {
 
         this.pesquisa = pesquisa;
@@ -352,37 +326,28 @@ public class GeradorDeGraficos {
         if (dataset == null) {
             tituloGrafico = "ERRO NA FORMATACAO DO ARQUIVO CSV! " + erro;
             System.out.println("[GeradorDeGraficos.macdChart] Erro na formatacao do arquivo CSV lido. Por favor verifique a estrutura do arquivo.");
+        } else {
+            ema26 = CalculadorDeMedias.calculateEmaValues(dadosParaEma, 26);
+            // ===================================== CONSERTAR AQUI A EXCEPTION QUANDO ARQUIVO CSV ESTÁ CORROMPIDO!! =====================
         }
-
-        ema26 = CalculadorDeMedias.calculateEmaValues(dadosParaEma, 26);
-
-//        for (int i = 0; i < ema12.length; i++) {
-//            macd[i] = ema12[i] - ema26[i];
-//            System.out.println("[GeradorDeGraficos.macdChart] Macd[" + i + "] = " + macd[i]);
-//        }
-
         XYSeriesCollection datasetMacd = new XYSeriesCollection();
         XYSeries series1 = new XYSeries("EMA 9  chart");
-        
+
         for (int i = 0; i < ema26.length; i++) {
-            series1.add( i, ema26[i]);
+            series1.add(i, ema26[i]);
             System.out.println("[GeradorDeGraficos.macdChart] series1.add = " + i + "-" + ema26[i]);
         }
         datasetMacd.addSeries(series1);
-
-        
-
         XYPlot mainPlot = new XYPlot(datasetMacd, domainAxis, rangeAxis, renderer);
 
         //Do some setting up, see the API Doc
-        renderer.setSeriesPaint(0, Color.BLACK);
+        renderer.setSeriesPaint(0, Color.MAGENTA);
         renderer.setSeriesPaint(1, Color.RED);
 //        renderer.setDrawVolume(false);
         rangeAxis.setAutoRangeIncludesZero(false);
 
         domainAxis.setTimeline(SegmentedTimeline.newMondayThroughFridayTimeline());
 
-        
         tituloGrafico = "EMA 26 chart";
         //Now create the chart and write PNG to OutputStream
         JFreeChart chart = new JFreeChart(tituloGrafico, null, mainPlot, true);
@@ -604,7 +569,6 @@ public class GeradorDeGraficos {
         }
 
 //        System.out.println("[GeradorDeGraficos] Registro (" + indiceDataInicial + ") Data Inicial = " + df.format(dataItems.get(indiceDataInicial).getDate()));
-
         // CRIANDO ARRAY DE DOUBLE PARA ENVIAR PARA CalculadorDeMedias
         dadosParaEma = new double[dadosParaGrafico.size()];
         int i = 0;
@@ -622,8 +586,8 @@ public class GeradorDeGraficos {
         for (double d : testeEma) {
             System.out.println("[GeradorDeGraficos] testeEma = " + d);
         }
-
         // OS DADOS DO YAHOO SAO DO MAIS NOVO PARA O MAIS ANTIGO. EH PRECISO REVERTER A LISTA PARA A ORDENACAO MAIS ANTIGO PARA O MAIS NOVO
+
         Collections.reverse(dadosParaGrafico);
 
         // CONVERTENDO LISTA PARA UM ARRAY

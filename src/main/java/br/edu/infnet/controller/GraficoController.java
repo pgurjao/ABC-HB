@@ -94,7 +94,7 @@ public class GraficoController {
             try {
                 outputStream = gG.candleStick(pesquisa);
             } catch (Exception e) {
-                System.out.println("[obterGraficoCandleBar] Exception ao chamar candlestickdemo");
+                System.out.println("[obterGraficoCandleBar] Exception ao chamar candleStick");
                 e.printStackTrace();
                 return null;
             }
@@ -125,7 +125,7 @@ public class GraficoController {
             try {
                 outputStream = gG.historicoPreco(pesquisa);
             } catch (Exception e) {
-                System.out.println("[obterGraficoHistoricoPreco] Exception ao chamar candlestickdemo");
+                System.out.println("[obterGraficoHistoricoPreco] Exception ao chamar historicoPreco");
                 e.printStackTrace();
                 return null;
             }
@@ -158,7 +158,7 @@ public class GraficoController {
             try {
                 outputStream = gG.macdChart(pesquisa);
             } catch (Exception e) {
-                System.out.println("[obterGraficoHistoricoPreco] Exception ao chamar candlestickdemo");
+                System.out.println("[obterGraficoHistoricoPreco] Exception ao chamar macdChart");
                 e.printStackTrace();
                 return null;
             }
@@ -190,7 +190,7 @@ public class GraficoController {
             try {
                 outputStream = gG.ema9Chart(pesquisa);
             } catch (Exception e) {
-                System.out.println("[obterGraficoHistoricoPreco] Exception ao chamar candlestickdemo");
+                System.out.println("[obterGraficoHistoricoPreco] Exception ao chamar ema9Chart");
                 e.printStackTrace();
                 return null;
             }
@@ -221,7 +221,7 @@ public class GraficoController {
             try {
                 outputStream = gG.ema26Chart(pesquisa);
             } catch (Exception e) {
-                System.out.println("[obterGraficoHistoricoPreco] Exception ao chamar candlestickdemo");
+                System.out.println("[obterGraficoHistoricoPreco] Exception ao chamar ema26Chart");
                 e.printStackTrace();
                 return null;
             }
@@ -252,7 +252,7 @@ public class GraficoController {
             try {
                 outputStream = gG.ema12Chart(pesquisa);
             } catch (Exception e) {
-                System.out.println("[obterGraficoHistoricoPreco] Exception ao chamar candlestickdemo");
+                System.out.println("[obterGraficoHistoricoPreco] Exception ao chamar ema12Chart");
                 e.printStackTrace();
                 return null;
             }
