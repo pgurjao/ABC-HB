@@ -98,6 +98,38 @@ public class Pesquisa {
         } else {
             strDataFinalFormatada = sdf.format(dataFinal);
         }
+        
+//        if (sigla == null) {
+//            sigla = "null";
+//        }
+//        
+//        if (historicoPreco == null) {
+//            historicoPreco = "null";
+//        }
+//        
+//        if (ema9 == null) { 
+//            ema9 = "null";
+//        }
+//        
+//        if (ema12 == null) { 
+//            ema12 = "null";
+//        }
+//        
+//        if (ema26 == null) { 
+//            ema26 = "null";
+//        }
+//        
+//        if (candleStick == null) { 
+//            candleStick = "null";
+//        }
+//        
+//        if (macd == null) { 
+//            macd = "null";
+//        }
+//        
+//        if (ambiente == null) { 
+//            ambiente = "null";
+//        }
 
         return "Pesquisa{" + "sigla=" + sigla + ", dataInicial=" + strDataInicialFormatada + ", dataFinal=" + strDataFinalFormatada + ", historicoPreco=" + historicoPreco + ", ema9=" + ema9 + ", ema12=" + ema12 + ", ema26=" + ema26 + ", candleStick=" + candleStick + ", macd=" + macd + ", ambiente=" + ambiente + '}';
 //        return "Pesquisa{" + "sigla=" + sigla + ", dataInicial=" + strDataInicialFormatada + ", dataFinal=" + strDataFinalFormatada + ", ambiente=" + ambiente + '}';
@@ -124,6 +156,9 @@ public class Pesquisa {
     }
 
     public void setEma12(String ema12) {
+        if (ema12 == null) {
+            this.ema12 = "";
+        } else 
         this.ema12 = ema12;
     }
 
@@ -140,6 +175,9 @@ public class Pesquisa {
     }
 
     public void setCandleStick(String candleStick) {
+        if (candleStick == null) {
+            this.candleStick = "";
+        } else 
         this.candleStick = candleStick;
     }
 

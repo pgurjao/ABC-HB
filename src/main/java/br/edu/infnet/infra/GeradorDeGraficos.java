@@ -10,7 +10,6 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.StringTokenizer;
@@ -23,7 +22,7 @@ import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.CandlestickRenderer;
 import org.jfree.chart.renderer.xy.HighLowRenderer;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
-import org.jfree.data.time.Day;
+import org.jfree.data.time.SimpleTimePeriod;
 import org.jfree.data.time.TimePeriod;
 import org.jfree.data.time.TimeTableXYDataset;
 import org.jfree.data.xy.AbstractXYDataset;
@@ -96,6 +95,8 @@ public class GeradorDeGraficos {
         DateFormat df = new SimpleDateFormat("dd/MMM/yyyy");
         this.pesquisa = pesquisa;
 
+        System.out.println("[GeradorDeGraficos.HistoricoDePreco] Pesquisa = " + pesquisa.toString());
+
         String stockSymbol = pesquisa.getSigla();
         String tituloGrafico = pesquisa.getSigla() + " HISTORICO DE PREÇO";
 
@@ -107,9 +108,10 @@ public class GeradorDeGraficos {
 //        XYDifferenceRenderer renderer = new XYDifferenceRenderer();
         HighLowRenderer renderer = new HighLowRenderer();
 
-        XYDataset dataset = getDataSet(stockSymbol);
+        XYDataset dataset = getDataSet(stockSymbol); // PEGA DADOS DO CSV
+
         XYSeriesCollection datasetHistPrec = new XYSeriesCollection();
-        TimeTableXYDataset datasetFinal = new TimeTableXYDataset();
+        TimeTableXYDataset timeTableXYDataset = new TimeTableXYDataset();
 
         if (dataset == null) {
             tituloGrafico = "ERRO NA FORMATACAO DO ARQUIVO CSV! " + erro;
@@ -124,64 +126,44 @@ public class GeradorDeGraficos {
             XYSeries series3 = new XYSeries("EMA 12");
             XYSeries series4 = new XYSeries("EMA 26");
 
-//            System.out.println("Dataset.getItemCount = " + dataset.getItemCount(0));
-//            System.out.println("Dataset.SeriesCount = " + +dataset.getSeriesCount());
-//            Calendar calendar = Calendar.getInstance();
-//            try {
-//                calendar.setTime(df.parse(String.valueOf(dataset.getXValue(0, 1))));
-//            } catch (Exception e) {
-//                System.out.println("DEU RUIM NO PARSE!");
-//            }
-//            System.out.println("Time in mili = " + calendar.getTimeInMillis());
+            // TESTANDO datasetFinal (TimeTableXYDataset)
+            for (int i = 0; i < dataset.getItemCount(0); i++) {
+                series1.add(dataset.getX(0, i), dataset.getY(0, i));
+                SimpleTimePeriod period = new SimpleTimePeriod((long) dataset.getX(0, i), (long) dataset.getX(0, i));
+                timeTableXYDataset.add(period, dataset.getYValue(0, i), "Preco de fechamento");
+            }
+
+            // DESENHA 'HISTORICO PRECO'
+            if (pesquisa.getHistoricoPreco().equalsIgnoreCase("historicoPreco")) {
+                for (int i = 0; i < dataset.getItemCount(0); i++) {
+                    series1.add(dataset.getX(0, i), dataset.getY(0, i));
+                }
+                datasetHistPrec.addSeries(series1);
+            }
+
+            // DESENHA 'EMA 9'
+            if (pesquisa.getEma9().equalsIgnoreCase("ema9")) {
+                for (int i = 0; i < ema9.length; i++) {
+                    series2.add(dataset.getX(0, i), ema9[i]);
+                }
+                datasetHistPrec.addSeries(series2);
+            }
+
+            // DESENHA 'EMA 12'
+            if (pesquisa.getEma12().equalsIgnoreCase("ema12")) {
+                for (int i = 0; i < ema12.length; i++) {
+                    series3.add(dataset.getX(0, i), ema12[i]);
+                }
+                datasetHistPrec.addSeries(series3);
+            }
             
-
-            System.out.println(" =======================================" );
-            datasetFinal.add(new Day(12,12,2019) , dataset.getYValue(0, 0), "historicoPreco");
-            datasetFinal.add(new Day(13,12,2019) , dataset.getYValue(0, 1), "historicoPreco");
-            datasetFinal.add(new Day(12,12,2019) , ema9[0], "ema9");
-            datasetFinal.add(new Day(12,12,2019) , ema12[0], "ema12");
-            datasetFinal.add(new Day(12,12,2019) , ema26[0], "ema26");
-            System.out.println(" ======================================" );
-            System.out.println(" DatasetFinal.getItemCount() = " + datasetFinal.getItemCount() );
-            System.out.println(" DatasetFinal.getItemCount(0) = " + datasetFinal.getItemCount(0));
-            System.out.println(" DatasetFinal.getItemCount(1) = " + datasetFinal.getItemCount(1));
-            System.out.println(" DatasetFinal.getItemCount(2) = " + datasetFinal.getItemCount(2));
-            System.out.println(" DatasetFinal.getItemCount(3) = " + datasetFinal.getItemCount(3));
-            System.out.println(" DatasetFinal.getSeriesCount() = " + datasetFinal.getSeriesCount() );
-            System.out.println(" DatasetFinal.seriesKey0 = " + datasetFinal.getSeriesKey(0) );
-            System.out.println(" DatasetFinal.seriesKey1 = " + datasetFinal.getSeriesKey(1) );
-            System.out.println(" DatasetFinal.seriesKey2 = " + datasetFinal.getSeriesKey(2) );
-            System.out.println(" DatasetFinal.seriesKey3 = " + datasetFinal.getSeriesKey(3) );
-            System.out.println(" DatasetFinal.getStartXValue = " + datasetFinal.getStartXValue(0, 0) );
-            System.out.println(" DatasetFinal.getStartYValue = " + datasetFinal.getStartYValue(0,0) );
-            System.out.println(" DatasetFinal.getStartXValue = " + datasetFinal.getXValue(0, 1) ); // APRENDER A TRANSFORMAR DOUBLE TO DATE <==============================
-            System.out.println(" DatasetFinal.getStartYValue = " + datasetFinal.getYValue(0,1) );
-            System.out.println(" ====================================== =XY" );
-
-//            for (int i = 0; i < ema9.length; i++) {
-//
-//                series1.add(i, dataset.getYValue(0, i));
-//                System.out.println("getYValue[" + i + "] = " + dataset.getYValue(0, i));
-//                System.out.println("getXValue[" + i + "] = " + dataset.getXValue(0, i));
-//            }
-//            System.out.println("ema9.length = " + ema9.length);
-
-            for (int i = 0; i < ema9.length; i++) {
-                series2.add(i, ema9[i]);
+            // DESENHA 'EMA 26'
+            if (pesquisa.getEma26().equalsIgnoreCase("ema26")) {
+                for (int i = 0; i < ema26.length; i++) {
+                    series4.add(dataset.getX(0, i), ema26[i]);
+                }
+                datasetHistPrec.addSeries(series4);
             }
-
-            for (int i = 0; i < ema12.length; i++) {
-                series3.add(i, ema12[i]);
-            }
-
-            for (int i = 0; i < ema26.length; i++) {
-                series4.add(i, ema26[i]);
-            }
-
-            datasetHistPrec.addSeries(series1);
-//            datasetHistPrec.addSeries(series2);
-//            datasetHistPrec.addSeries(series3);
-//            datasetHistPrec.addSeries(series4);
 
         }
 
@@ -246,7 +228,7 @@ public class GeradorDeGraficos {
                 macd[i] = ema12[i] - ema26[i];
 
 //                EXIBE ARRAY COM MACD CALCULADO
-                System.out.println("[GeradorDeGraficos.macdChart] Macd[" + i + "] = " + macd[i]);
+//                System.out.println("[GeradorDeGraficos.macdChart] Macd[" + i + "] = " + macd[i]);
             }
         }
 
@@ -300,7 +282,9 @@ public class GeradorDeGraficos {
         NumberAxis rangeAxis = new NumberAxis("Valor");
         XYLineAndShapeRenderer renderer = new XYLineAndShapeRenderer();
 
-        XYDataset dataset = getDataSet(stockSymbol);
+        XYDataset dataset = getDataSet(stockSymbol); // PEGA DADOS DO CSV
+
+        XYSeriesCollection datasetEma9 = new XYSeriesCollection();
 
         if (dataset == null) {
             tituloGrafico = "ERRO NA FORMATACAO DO ARQUIVO CSV! " + erro;
@@ -309,34 +293,36 @@ public class GeradorDeGraficos {
             ema9 = CalculadorDeMedias.calculateEmaValues(dadosParaEma, 9);
             ema12 = CalculadorDeMedias.calculateEmaValues(dadosParaEma, 12);
             ema26 = CalculadorDeMedias.calculateEmaValues(dadosParaEma, 26);
+
+            XYSeries series1 = new XYSeries("EMA 9");
+            XYSeries series2 = new XYSeries("EMA 12");
+            XYSeries series3 = new XYSeries("EMA 26");
+            XYSeries series4 = new XYSeries("Preco fechamento");
+
+//        for (int i = 0; i < ema9.length; i++) {
+//            series1.add(i, ema9[i]);                  // TESTANDO
+//        }
+            for (int i = 0; i < ema9.length; i++) {
+                series1.add(dataset.getX(0, i), ema9[i]);
+            }
+
+            for (int i = 0; i < ema12.length; i++) {
+                series2.add(dataset.getX(0, i), ema12[i]);
+            }
+
+            for (int i = 0; i < ema26.length; i++) {
+                series3.add(dataset.getX(0, i), ema26[i]);
+            }
+
+            for (int i = 0; i < ema9.length; i++) {
+                series4.add(dataset.getX(0, i), dataset.getY(0, i));
+            }
+
+            datasetEma9.addSeries(series1);
+            datasetEma9.addSeries(series2);
+            datasetEma9.addSeries(series3);
+            datasetEma9.addSeries(series4);
         }
-
-        XYSeriesCollection datasetEma9 = new XYSeriesCollection();
-        XYSeries series1 = new XYSeries("EMA 9 chart");
-        XYSeries series2 = new XYSeries("EMA 12 chart");
-        XYSeries series3 = new XYSeries("EMA 26 chart");
-        XYSeries series4 = new XYSeries("Preco fechamento");
-
-        for (int i = 0; i < ema9.length; i++) {
-            series1.add(i, ema9[i]);
-        }
-
-        for (int i = 0; i < ema12.length; i++) {
-            series2.add(i, ema12[i]);
-        }
-
-        for (int i = 0; i < ema26.length; i++) {
-            series3.add(i, ema26[i]);
-        }
-
-        for (int i = 0; i < ema9.length; i++) {
-            series4.add(i, dataset.getYValue(i, i));
-        }
-
-        datasetEma9.addSeries(series1);
-        datasetEma9.addSeries(series2);
-        datasetEma9.addSeries(series3);
-        datasetEma9.addSeries(series4);
 
         XYPlot mainPlot = new XYPlot(datasetEma9, domainAxis, rangeAxis, renderer);
 
@@ -353,8 +339,8 @@ public class GeradorDeGraficos {
         rangeAxis.setAutoRangeIncludesZero(false);
 
 //        domainAxis.setTimeline(SegmentedTimeline.newMondayThroughFridayTimeline());
-//        domainAxis.setRange(pesquisa.getDataInicial(), pesquisa.getDataFinal());
-        domainAxis.setRange(0, ema9.length);
+        domainAxis.setRange(pesquisa.getDataInicial(), pesquisa.getDataFinal());
+//        domainAxis.setRange(0, ema9.length);
 
         DateFormat df = new SimpleDateFormat("dd/MMM/yyyy");
         domainAxis.setDateFormatOverride(df);
@@ -409,7 +395,7 @@ public class GeradorDeGraficos {
 
 //        domainAxis.setTimeline(SegmentedTimeline.newMondayThroughFridayTimeline());
 //        domainAxis.setRange(pesquisa.getDataInicial(), pesquisa.getDataFinal());
-        domainAxis.setRange(0 ,ema12.length);
+        domainAxis.setRange(0, ema12.length);
 
         DateFormat df = new SimpleDateFormat("dd/MMM/yyyy");
         domainAxis.setDateFormatOverride(df);
@@ -576,8 +562,7 @@ public class GeradorDeGraficos {
                 double volume = Double.parseDouble(st.nextToken());
                 double adjClose = Double.parseDouble(st.nextToken());
 
-                System.out.println("[getdata] Data = " + df.format(date));
-
+//                System.out.println("[getdata] Data = " + df.format(date));
                 if (date.compareTo(dataInicial) >= 0 && date.compareTo(dataFinal) <= 0) {
                     quantidadeRegistros++;
 //                    System.out.println("[GeradorDeGraficos] Se passaram " + quantidadeRegistros + " registros(s) desde a dataInicial " + df.format(dataInicial));
