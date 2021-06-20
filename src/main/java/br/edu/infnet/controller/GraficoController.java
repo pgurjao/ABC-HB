@@ -311,7 +311,7 @@ public class GraficoController {
             }
 
             if (parametros.get("historicoPreco").isBlank()) {
-                System.out.println("[validarParametros] Erro: historicoPreco is blank");
+                System.out.println("[validarParametros] Aviso: historicoPreco is blank");
                 pesquisa.setHistoricoPreco("");
 //                return null;
             } else {
@@ -319,7 +319,7 @@ public class GraficoController {
             }
 
             if (parametros.get("ema9").isBlank()) {
-                System.out.println("[validarParametros] Erro: Ema9 is blank");
+                System.out.println("[validarParametros] Aviso: Ema9 is blank");
                 pesquisa.setEma9("");
 //                return null;
             } else {
@@ -327,7 +327,7 @@ public class GraficoController {
             }
 
             if (parametros.get("ema12").isBlank()) {
-                System.out.println("[validarParametros] Erro: Ema12 is blank");
+                System.out.println("[validarParametros] Aviso: Ema12 is blank");
                 pesquisa.setEma12("");
 //                return null;
             } else {
@@ -335,7 +335,7 @@ public class GraficoController {
             }
 
             if (parametros.get("ema26").isBlank()) {
-                System.out.println("[validarParametros] Erro: Ema26 is blank");
+                System.out.println("[validarParametros] Aviso: Ema26 is blank");
                 pesquisa.setEma26("");
 //                return null;
             } else {
@@ -343,7 +343,7 @@ public class GraficoController {
             }
 
             if (parametros.get("candleStick").isBlank()) {
-                System.out.println("[validarParametros] Erro: CandleStick is blank");
+                System.out.println("[validarParametros] Aviso: CandleStick is blank");
                 pesquisa.setCandleStick("");
 //                return null;
             } else {
@@ -351,7 +351,7 @@ public class GraficoController {
             }
 
             if (parametros.get("macd").isBlank()) {
-                System.out.println("[validarParametros] Erro: MACD is blank");
+                System.out.println("[validarParametros] Aviso: MACD is blank");
                 pesquisa.setMacd("");
 //                return null;
             } else {

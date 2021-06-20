@@ -15,15 +15,20 @@ import java.util.List;
 import java.util.StringTokenizer;
 import org.jfree.chart.ChartUtils;
 import org.jfree.chart.JFreeChart;
+import org.jfree.chart.axis.CategoryAxis;
 import org.jfree.chart.axis.DateAxis;
 import org.jfree.chart.axis.NumberAxis;
+import org.jfree.chart.plot.CategoryPlot;
 //import org.jfree.chart.axis.SegmentedTimeline;
 import org.jfree.chart.plot.XYPlot;
+import org.jfree.chart.renderer.category.BarRenderer;
+import org.jfree.chart.renderer.category.CategoryItemRenderer;
+import org.jfree.chart.renderer.category.LineAndShapeRenderer;
 import org.jfree.chart.renderer.xy.CandlestickRenderer;
 import org.jfree.chart.renderer.xy.HighLowRenderer;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
+import org.jfree.data.category.DefaultCategoryDataset;
 import org.jfree.data.time.SimpleTimePeriod;
-import org.jfree.data.time.TimePeriod;
 import org.jfree.data.time.TimeTableXYDataset;
 import org.jfree.data.xy.AbstractXYDataset;
 import org.jfree.data.xy.DefaultOHLCDataset;
@@ -95,8 +100,6 @@ public class GeradorDeGraficos {
         DateFormat df = new SimpleDateFormat("dd/MMM/yyyy");
         this.pesquisa = pesquisa;
 
-        System.out.println("[GeradorDeGraficos.HistoricoDePreco] Pesquisa = " + pesquisa.toString());
-
         String stockSymbol = pesquisa.getSigla();
         String tituloGrafico = pesquisa.getSigla() + " HISTORICO DE PREÇO";
 
@@ -117,57 +120,67 @@ public class GeradorDeGraficos {
             tituloGrafico = "ERRO NA FORMATACAO DO ARQUIVO CSV! " + erro;
             System.out.println("[GeradorDeGraficos.HistoricoDePreco] Erro na formatacao do arquivo CSV lido. Por favor verifique a estrutura do arquivo.");
         } else {
-            ema9 = CalculadorDeMedias.calculateEmaValues(dadosParaEma, 9);
-            ema12 = CalculadorDeMedias.calculateEmaValues(dadosParaEma, 12);
-            ema26 = CalculadorDeMedias.calculateEmaValues(dadosParaEma, 26);
 
-            XYSeries series1 = new XYSeries("Preco de fechamento");
-            XYSeries series2 = new XYSeries("EMA 9");
-            XYSeries series3 = new XYSeries("EMA 12");
-            XYSeries series4 = new XYSeries("EMA 26");
-
+//            XYSeries series1 = new XYSeries("Preco de fechamento");
+//            XYSeries series2 = new XYSeries("EMA 9");
+//            XYSeries series3 = new XYSeries("EMA 12");
+//            XYSeries series4 = new XYSeries("EMA 26");
             // TESTANDO datasetFinal (TimeTableXYDataset)
             for (int i = 0; i < dataset.getItemCount(0); i++) {
-                series1.add(dataset.getX(0, i), dataset.getY(0, i));
-                SimpleTimePeriod period = new SimpleTimePeriod((long) dataset.getX(0, i), (long) dataset.getX(0, i));
-                timeTableXYDataset.add(period, dataset.getYValue(0, i), "Preco de fechamento");
+//                series1.add(dataset.getX(0, i), dataset.getY(0, i)); // ADICIONA NA SERIES 1 'NORMAL'
+                SimpleTimePeriod period = new SimpleTimePeriod((long) dataset.getX(0, i), (long) dataset.getX(0, i)); // CRIA 'SIMPLETIMEPERIOD' COM DATAS INICIAL E FINAL O DIA DO EIXO X
+                timeTableXYDataset.add(period, dataset.getYValue(0, i), "Preco de fechamento"); // ADICIONA AO DATASET 'TIMETABLE' O 'period' CRIADO ACIMA (dia), O VALOR DE 'y' À SERIE 'PRECO DE FECHAMENTO' 
             }
 
             // DESENHA 'HISTORICO PRECO'
             if (pesquisa.getHistoricoPreco().equalsIgnoreCase("historicoPreco")) {
                 for (int i = 0; i < dataset.getItemCount(0); i++) {
-                    series1.add(dataset.getX(0, i), dataset.getY(0, i));
+//                    series1.add(dataset.getX(0, i), dataset.getY(0, i));
                 }
-                datasetHistPrec.addSeries(series1);
+//                datasetHistPrec.addSeries(series1);
             }
 
-            // DESENHA 'EMA 9'
+            // CALCULA E DESENHA 'EMA 9'
             if (pesquisa.getEma9().equalsIgnoreCase("ema9")) {
+                ema9 = CalculadorDeMedias.calculateEmaValues(dadosParaEma, 9);
                 for (int i = 0; i < ema9.length; i++) {
-                    series2.add(dataset.getX(0, i), ema9[i]);
+//                    series2.add(dataset.getX(0, i), ema9[i]);
+
+                    SimpleTimePeriod period = new SimpleTimePeriod((long) dataset.getX(0, i), (long) dataset.getX(0, i)); // CRIA 'SIMPLETIMEPERIOD' COM DATAS INICIAL E FINAL O DIA DO EIXO X
+                    timeTableXYDataset.add(period, ema9[i], "EMA 9"); // ADICIONA AO DATASET 'TIMETABLE' O 'period' CRIADO ACIMA (dia), O VALOR DE 'y' À SERIE 'EMA 9' 
                 }
-                datasetHistPrec.addSeries(series2);
+//                datasetHistPrec.addSeries(series2);
             }
 
-            // DESENHA 'EMA 12'
+            // CALCULA E DESENHA 'EMA 12'
             if (pesquisa.getEma12().equalsIgnoreCase("ema12")) {
+                ema12 = CalculadorDeMedias.calculateEmaValues(dadosParaEma, 12);
                 for (int i = 0; i < ema12.length; i++) {
-                    series3.add(dataset.getX(0, i), ema12[i]);
+//                    series3.add(dataset.getX(0, i), ema12[i]);
+
+                    SimpleTimePeriod period = new SimpleTimePeriod((long) dataset.getX(0, i), (long) dataset.getX(0, i)); // CRIA 'SIMPLETIMEPERIOD' COM DATAS INICIAL E FINAL O DIA DO EIXO X
+                    timeTableXYDataset.add(period, ema12[i], "EMA 12"); // ADICIONA AO DATASET 'TIMETABLE' O 'period' CRIADO ACIMA (dia), O VALOR DE 'y' À SERIE 'EMA 12' 
                 }
-                datasetHistPrec.addSeries(series3);
+//                datasetHistPrec.addSeries(series3);
             }
-            
-            // DESENHA 'EMA 26'
+
+            // CALCULA E DESENHA 'EMA 26'
             if (pesquisa.getEma26().equalsIgnoreCase("ema26")) {
+                ema26 = CalculadorDeMedias.calculateEmaValues(dadosParaEma, 26);
                 for (int i = 0; i < ema26.length; i++) {
-                    series4.add(dataset.getX(0, i), ema26[i]);
+//                    series4.add(dataset.getX(0, i), ema26[i]);
+
+                    SimpleTimePeriod period = new SimpleTimePeriod((long) dataset.getX(0, i), (long) dataset.getX(0, i)); // CRIA 'SIMPLETIMEPERIOD' COM DATAS INICIAL E FINAL O DIA DO EIXO X
+                    timeTableXYDataset.add(period, ema26[i], "EMA 26"); // ADICIONA AO DATASET 'TIMETABLE' O 'period' CRIADO ACIMA (dia), O VALOR DE 'y' À SERIE 'EMA 26' 
                 }
-                datasetHistPrec.addSeries(series4);
+//                datasetHistPrec.addSeries(series4);
             }
 
         }
 
-        XYPlot mainPlot = new XYPlot(datasetHistPrec, domainAxis, rangeAxis, renderer);
+//        timeTableXYDataset.setDomainIsPointsInTime(false);
+        XYPlot mainPlot = new XYPlot(timeTableXYDataset, domainAxis, rangeAxis, renderer);
+//        XYPlot mainPlot = new XYPlot(datasetHistPrec, domainAxis, rangeAxis, renderer);
 
         int roxo = -9814343;
         int laranja = -878264;
@@ -180,10 +193,7 @@ public class GeradorDeGraficos {
         rangeAxis.setAutoRangeIncludesZero(false);
 
 //        SETA A ESCALA DO EIXO X
-//        domainAxis.setTimeline(SegmentedTimeline.newMondayThroughFridayTimeline());
-        domainAxis.setRange(pesquisa.getDataInicial(), pesquisa.getDataFinal());
-//        domainAxis.setRange(0, ema9.length);
-
+//        domainAxis.setRange(pesquisa.getDataInicial(), pesquisa.getDataFinal());
         domainAxis.setDateFormatOverride(df);
 
 //        domainAxis.setAutoRange(true);
@@ -204,16 +214,36 @@ public class GeradorDeGraficos {
 
     public ByteArrayOutputStream macdChart(Pesquisa pesquisa) {
 
+        DateFormat df = new SimpleDateFormat("dd/MMM/yyyy");
         this.pesquisa = pesquisa;
 
         String stockSymbol = pesquisa.getSigla();
         String tituloGrafico = pesquisa.getSigla() + " MACD";
 
-        DateAxis domainAxis = new DateAxis("Dia");
-        NumberAxis rangeAxis = new NumberAxis("Valor");
-        XYLineAndShapeRenderer renderer = new XYLineAndShapeRenderer();
+//        DateAxis domainAxis = new DateAxis("Dia");
+//        NumberAxis rangeAxis = new NumberAxis("Valor");
+//        HighLowRenderer renderer = new HighLowRenderer();
+        // Create Category plot
+        CategoryPlot plot = new CategoryPlot();
 
-        XYDataset dataset = getDataSet(stockSymbol);
+        // ADICIONA O PRIMEIRO DATASET E RENDERIZA COMO BARRAS
+        CategoryItemRenderer macdRenderer = new LineAndShapeRenderer();
+        
+// ADICIONA O PRIMEIRO DATASET E RENDERIZA COMO BARRAS
+        CategoryItemRenderer signalRenderer = new LineAndShapeRenderer();
+
+// ADICIONA O PRIMEIRO DATASET E RENDERIZA COMO BARRAS
+//        CategoryItemRenderer signalRenderer = new LineAndShapeRenderer();
+
+        // ADICIONA O SEGUNDO DATASET E RENDERIZA COMO LINHAS
+        BarRenderer histogramRenderer = new BarRenderer();
+
+        DefaultCategoryDataset macdDataset = new DefaultCategoryDataset();
+        DefaultCategoryDataset signalDataset = new DefaultCategoryDataset();
+        DefaultCategoryDataset histogramDataset = new DefaultCategoryDataset();
+        
+        XYDataset dataset = getDataSet(stockSymbol); // PEGA DADOS DO CSV
+//        TimeTableXYDataset timeTableXYDataset = new TimeTableXYDataset();
 
         if (dataset == null) {
             tituloGrafico = "ERRO NA FORMATACAO DO ARQUIVO CSV! " + erro;
@@ -222,42 +252,89 @@ public class GeradorDeGraficos {
 //            ema9 = CalculadorDeMedias.calculateEmaValues(dadosParaEma, 9);
             ema12 = CalculadorDeMedias.calculateEmaValues(dadosParaEma, 12);
             ema26 = CalculadorDeMedias.calculateEmaValues(dadosParaEma, 26);
+
             macd = new double[ema12.length];
 
+            System.out.println("[GeradorDeGraficos.macdChart] Double MIN = " + Double.MIN_VALUE);
+
+            // CALCULA 'macd'
             for (int i = 0; i < ema12.length; i++) {
                 macd[i] = ema12[i] - ema26[i];
-
 //                EXIBE ARRAY COM MACD CALCULADO
 //                System.out.println("[GeradorDeGraficos.macdChart] Macd[" + i + "] = " + macd[i]);
             }
+
+            // DESENHANDO LINHA 'macd'        
+            for (int i = 0; i < macd.length; i++) {
+                SimpleTimePeriod period = new SimpleTimePeriod((long) dataset.getX(0, i), (long) dataset.getX(0, i)); // CRIA 'SIMPLETIMEPERIOD' COM DATAS INICIAL E FINAL O DIA DO EIXO X
+//                timeTableXYDataset.add(period, macd[i], "MACD"); // ADICIONA AO DATASET 'TIMETABLE' O 'period' CRIADO ACIMA (dia), O VALOR DE 'y' À SERIE 'MACD' 
+
+                Date date = new Date((long) dataset.getX(0, i)); // CONVERTE A DATA DO EIXO X DO 'DATASET' DE MILISEGUNDO PARA 'date'
+                macdDataset.addValue(macd[i], "MACD", df.format(date)); // ADICIONA AO 'DATASET' O VALOR DE macd[i] com a data na 'series' "MACD"
+//                defaultCategoryDataset.addValue(macd[i], "MACD", "2016-12-19");
+            }
+            
+
+            // CALCULA 'macd Signal Line'
+            double[] macdSignalLine = new double[ema12.length];
+            macdSignalLine = CalculadorDeMedias.calculateEmaValues(macd, 9);
+
+            // DESENHANDO LINHA 'macd signal line'
+            for (int i = 0; i < macdSignalLine.length; i++) {
+                SimpleTimePeriod period = new SimpleTimePeriod((long) dataset.getX(0, i), (long) dataset.getX(0, i)); // CRIA 'SIMPLETIMEPERIOD' COM DATAS INICIAL E FINAL O DIA DO EIXO X
+//                timeTableXYDataset.add(period, macdSignalLine[i], "Signal Line"); // ADICIONA AO DATASET 'TIMETABLE' O 'period' CRIADO ACIMA (dia), O VALOR DE 'y' À SERIE 'signal line'
+
+                Date date = new Date((long) dataset.getX(0, i)); // CONVERTE A DATA DO EIXO X DO 'DATASET' DE MILISEGUNDO PARA 'date'
+                signalDataset.addValue(macdSignalLine[i], "SIGNAL LINE", df.format(date)); // ADICIONA AO 'DATASET' O VALOR DE macd[i] com a data na 'series' "SIGNAL LINE"
+            }
+            
+
+            // CALCULA 'histograma' do MACD
+            double[] dadosHistograma = new double[ema12.length];
+            for (int i = 0; i < macdSignalLine.length; i++) {
+                dadosHistograma[i] = macd[i] - macdSignalLine[i];
+            }
+
+            // DESENHANDO BARRAS 'histograma'
+            for (int i = 0; i < macdSignalLine.length; i++) {
+                Date date = new Date((long) dataset.getX(0, i)); // CONVERTE A DATA DO EIXO X DO 'DATASET' DE MILISEGUNDO PARA 'date'
+                histogramDataset.addValue(dadosHistograma[i], "HISTOGRAMA", df.format(date)); // ADICIONA AO 'DATASET' O VALOR DE macd[i] com a data na 'series' "SIGNAL LINE"
+            }
+            
+            
+
         }
 
-        XYSeriesCollection datasetMacd = new XYSeriesCollection();
-        XYSeries series1 = new XYSeries("MACD line");
-
-        for (int i = 0; i < macd.length; i++) {
-            series1.add(i, macd[i]);
-//            EXIBE OS VALORES DE MACD SENDO INSERIDOS NO 'SERIES1'
-//            System.out.println("[GeradorDeGraficos.macdChart] series1.add = " + i + ": " + macd[i]);
-        }
-        datasetMacd.addSeries(series1);
-
-        XYPlot mainPlot = new XYPlot(datasetMacd, domainAxis, rangeAxis, renderer);
+//        XYPlot mainPlot = new XYPlot(timeTableXYDataset, domainAxis, rangeAxis, renderer);
+        int laranja = -878264;
 
         //Do some setting up, see the API Doc
-        renderer.setSeriesPaint(0, Color.GREEN);
-        renderer.setSeriesPaint(1, Color.RED);
+//        renderer.setSeriesPaint(0, Color.BLUE);
+//        renderer.setSeriesPaint(1, Color.decode(String.valueOf(laranja)));
 //        renderer.setDrawVolume(false);
-        rangeAxis.setAutoRangeIncludesZero(false);
-
+//        rangeAxis.setAutoRangeIncludesZero(false);
 //        domainAxis.setTimeline(SegmentedTimeline.newMondayThroughFridayTimeline());
-        domainAxis.setRange(pesquisa.getDataInicial(), pesquisa.getDataFinal());
-
-        DateFormat df = new SimpleDateFormat("dd/MMM/yyyy");
-        domainAxis.setDateFormatOverride(df);
-
+//        domainAxis.setRange(pesquisa.getDataInicial(), pesquisa.getDataFinal());
+//        domainAxis.setDateFormatOverride(df);
         //Now create the chart and write PNG to OutputStream
-        JFreeChart chart = new JFreeChart(tituloGrafico, null, mainPlot, true);
+//        JFreeChart chart = new JFreeChart(tituloGrafico, null, mainPlot, true);
+
+
+        plot.setDataset(0, macdDataset);
+        plot.setRenderer(0, macdRenderer);
+        
+        plot.setDataset(1, signalDataset);
+        plot.setRenderer(1, signalRenderer);
+        
+        plot.setDataset(2, histogramDataset);
+        plot.setRenderer(2, histogramRenderer);
+        
+        // Set Axis
+        plot.setDomainAxis(new CategoryAxis("Data"));
+        plot.setRangeAxis(new NumberAxis("Valor"));
+
+        JFreeChart chart = new JFreeChart(plot);
+//        chart.setTitle("Gráfico MACD");
 
         //Escreve o grafico em um ByteArrayOutputStream para ser retornado pelo controller, via GET, para o JSP exibir a imagem
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();

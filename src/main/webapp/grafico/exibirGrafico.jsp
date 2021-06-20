@@ -20,65 +20,73 @@
         <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
     </head>
     <body style="margin: 10px">
-        <h1>Corretora ABC Homebroker</h1>
+        <h3><center>Corretora ABC Homebroker</center></h3>
         <hr>
-        <h4><a href="../ABC-HB/index.jsp">← Voltar</a></h4>
+        <a href="../ABC-HB/index.jsp">← Voltar</a>
         <c:if test="${not empty pesquisa}">
-            <br>
-            <h4 style="color: purple">DEBUG: ${pesquisa}</h4>
-            <br>
+            <!--<h4 style="color: purple">DEBUG: ${pesquisa}</h4>-->
         </c:if>
 
-        <c:if test="${pesquisa.historicoPreco != null
-                      || pesquisa.ema9 != null
-                      || pesquisa.ema12 != null
-                      || pesquisa.ema26 != null
-                      || pesquisa.candleStick != null
-                      || pesquisa.macd != null}">
-              <center><h3>Exibindo graficos de <b>${sigla}</b></h3></center>
-              </c:if>
-        
-              <c:if test="${pesquisa.historicoPreco == null
-                      && pesquisa.ema9 == null
-                      && pesquisa.ema12 == null
-                      && pesquisa.ema26 == null
-                      && pesquisa.candleStick == null
-                      && pesquisa.macd == null}">
-                    <center><h3 style="color: red">Nenhum gráfico selecionado. Por favor selecione algum gráfico e tente novamente.</h3></center>
-              </c:if>
-              
+        <center>
+            <%--<c:if test="${pesquisa.historicoPreco != null
+                          || pesquisa.ema9 != null
+                          || pesquisa.ema12 != null
+                          || pesquisa.ema26 != null
+                          || pesquisa.candleStick != null
+                          || pesquisa.macd != null}">
+                  <center><h5>Exibindo graficos de <b>${sigla}</b></h5></center>
+                  </c:if>--%>
 
-        <c:if test="${pesquisa.historicoPreco != null || pesquisa.ema9 != null || pesquisa.ema12 != null || pesquisa.ema26 != null}">
-            <h3 style="color: green">Gráfico variação preço</h3>
-            <img src="../ABC-HB/grafico/historicopreco/?sigla=${pesquisa.sigla}&dataInicial=<fmt:formatDate value="${pesquisa.dataInicial}" pattern="yyyy-MM-dd" />&dataFinal=<fmt:formatDate value="${pesquisa.dataFinal}" pattern="yyyy-MM-dd" />&historicoPreco=${pesquisa.historicoPreco}&ema9=${pesquisa.ema9}&ema12=${pesquisa.ema12}&ema26=${pesquisa.ema26}&candleStick=${pesquisa.candleStick}&macd=${pesquisa.macd}&ambiente=${pesquisa.ambiente}"" width="1300" height="500" alt="Se voce está vendo essa mensagem o grafico HistoricoPreco de ${pesquisa.sigla} nao carregou"/>
-            <br>
-<!--            <br><h4>historicoPreco = ${pesquisa.historicoPreco}</h4>
-            <br><h4>ema9 = ${pesquisa.ema9}</h4>
-            <br><h4>ema12 = ${pesquisa.ema12}</h4>
-            <br><h4>ema26 = ${pesquisa.ema26}</h4>
-            <br><h4>candleStick = ${pesquisa.candleStick}</h4>
-            <br><h4>macd = ${pesquisa.macd}</h4>-->
-            <br>
-            <br>
-        </c:if>
+            <c:if test="${pesquisa.historicoPreco == null
+                          && pesquisa.ema9 == null
+                          && pesquisa.ema12 == null
+                          && pesquisa.ema26 == null
+                          && pesquisa.candleStick == null
+                          && pesquisa.macd == null}">
+                  <center><h3 style="color: red">Nenhum gráfico selecionado. Por favor selecione algum gráfico e tente novamente.</h3></center>
+                  </c:if>
 
-        <%--<c:if test="${pesquisa.ema9 != null}">
-            <h3 style="color: green">Gráfico Ema9</h3>
-            <img src="../ABC-HB/grafico/ema9/?sigla=${pesquisa.sigla}&dataInicial=<fmt:formatDate value="${pesquisa.dataInicial}" pattern="yyyy-MM-dd" />&dataFinal=<fmt:formatDate value="${pesquisa.dataFinal}" pattern="yyyy-MM-dd" />&historicoPreco=${pesquisa.historicoPreco}&ema9=${pesquisa.ema9}&ema12=${pesquisa.ema12}&ema26=${pesquisa.ema26}&candleStick=${pesquisa.candleStick}&macd=${pesquisa.macd}&ambiente=${pesquisa.ambiente}"" width="1300" height="500" alt="Se voce está vendo essa mensagem o grafico EMA 9 de ${pesquisa.sigla} nao carregou"/>
-            <br>
-            <br>
-            <br>
-            <br>
-        </c:if>--%>
 
-        <%--<c:if test="${pesquisa.ema12 != null}">
-            <h3 style="color: green">Gráfico Ema12</h3>
-            <img src="../ABC-HB/grafico/ema12/?sigla=${pesquisa.sigla}&dataInicial=<fmt:formatDate value="${pesquisa.dataInicial}" pattern="yyyy-MM-dd" />&dataFinal=<fmt:formatDate value="${pesquisa.dataFinal}" pattern="yyyy-MM-dd" />&historicoPreco=${pesquisa.historicoPreco}&ema9=${pesquisa.ema9}&ema12=${pesquisa.ema12}&ema26=${pesquisa.ema26}&candleStick=${pesquisa.candleStick}&macd=${pesquisa.macd}&ambiente=${pesquisa.ambiente}"" width="1300" height="500" alt="Se voce está vendo essa mensagem o grafico EMA 12 de ${pesquisa.sigla} nao carregou"/>
-            <br>
-            <br>
-            <br>
-            <br>
-        </c:if>
+            <c:if test="${pesquisa.historicoPreco != null || pesquisa.ema9 != null || pesquisa.ema12 != null || pesquisa.ema26 != null}">
+                <!--<h3 style="color: green">Gráfico variação preço</h3>-->
+                <img src="../ABC-HB/grafico/historicopreco/?sigla=${pesquisa.sigla}&dataInicial=<fmt:formatDate value="${pesquisa.dataInicial}" pattern="yyyy-MM-dd" />&dataFinal=<fmt:formatDate value="${pesquisa.dataFinal}" pattern="yyyy-MM-dd" />&historicoPreco=${pesquisa.historicoPreco}&ema9=${pesquisa.ema9}&ema12=${pesquisa.ema12}&ema26=${pesquisa.ema26}&candleStick=${pesquisa.candleStick}&macd=${pesquisa.macd}&ambiente=${pesquisa.ambiente}"" width="1300" height="500" alt="Se voce está vendo essa mensagem o grafico HistoricoPreco de ${pesquisa.sigla} nao carregou"/>
+            </c:if>
+
+            <c:if test="${pesquisa.macd != null}">
+                <!--<h3 style="color: green">Gráfico MACD</h3>-->
+                <img src="../ABC-HB/grafico/macd/?sigla=${pesquisa.sigla}&dataInicial=<fmt:formatDate value="${pesquisa.dataInicial}" pattern="yyyy-MM-dd" />&dataFinal=<fmt:formatDate value="${pesquisa.dataFinal}" pattern="yyyy-MM-dd" />&historicoPreco=${pesquisa.historicoPreco}&ema9=${pesquisa.ema9}&ema12=${pesquisa.ema12}&ema26=${pesquisa.ema26}&candleStick=${pesquisa.candleStick}&macd=${pesquisa.macd}&ambiente=${pesquisa.ambiente}"" width="1300" height="180" alt="Se voce está vendo essa mensagem o grafico MACD de ${pesquisa.sigla} nao carregou"/>
+                <br>
+                <br>
+                <br>
+                <br>
+            </c:if>
+
+            <c:if test="${pesquisa.candleStick != null}">
+                <h3 style="color: green">Gráfico CandleStick</h3>
+                <img src="../ABC-HB/grafico/candlebar/?sigla=${pesquisa.sigla}&dataInicial=<fmt:formatDate value="${pesquisa.dataInicial}" pattern="yyyy-MM-dd" />&dataFinal=<fmt:formatDate value="${pesquisa.dataFinal}" pattern="yyyy-MM-dd" />&historicoPreco=${pesquisa.historicoPreco}&ema9=${pesquisa.ema9}&ema12=${pesquisa.ema12}&ema26=${pesquisa.ema26}&candleStick=${pesquisa.candleStick}&macd=${pesquisa.macd}&ambiente=${pesquisa.ambiente}"" width="1300" height="500" alt="Se voce está vendo essa mensagem o grafico CandleStick de ${pesquisa.sigla} nao carregou"/>
+                <br>
+                <br>
+                <br>
+                <br>
+            </c:if>
+
+            <%--<c:if test="${pesquisa.ema9 != null}">
+                <h3 style="color: green">Gráfico Ema9</h3>
+                <img src="../ABC-HB/grafico/ema9/?sigla=${pesquisa.sigla}&dataInicial=<fmt:formatDate value="${pesquisa.dataInicial}" pattern="yyyy-MM-dd" />&dataFinal=<fmt:formatDate value="${pesquisa.dataFinal}" pattern="yyyy-MM-dd" />&historicoPreco=${pesquisa.historicoPreco}&ema9=${pesquisa.ema9}&ema12=${pesquisa.ema12}&ema26=${pesquisa.ema26}&candleStick=${pesquisa.candleStick}&macd=${pesquisa.macd}&ambiente=${pesquisa.ambiente}"" width="1300" height="500" alt="Se voce está vendo essa mensagem o grafico EMA 9 de ${pesquisa.sigla} nao carregou"/>
+                <br>
+                <br>
+                <br>
+                <br>
+            </c:if>--%>
+
+            <%--<c:if test="${pesquisa.ema12 != null}">
+                <h3 style="color: green">Gráfico Ema12</h3>
+                <img src="../ABC-HB/grafico/ema12/?sigla=${pesquisa.sigla}&dataInicial=<fmt:formatDate value="${pesquisa.dataInicial}" pattern="yyyy-MM-dd" />&dataFinal=<fmt:formatDate value="${pesquisa.dataFinal}" pattern="yyyy-MM-dd" />&historicoPreco=${pesquisa.historicoPreco}&ema9=${pesquisa.ema9}&ema12=${pesquisa.ema12}&ema26=${pesquisa.ema26}&candleStick=${pesquisa.candleStick}&macd=${pesquisa.macd}&ambiente=${pesquisa.ambiente}"" width="1300" height="500" alt="Se voce está vendo essa mensagem o grafico EMA 12 de ${pesquisa.sigla} nao carregou"/>
+                <br>
+                <br>
+                <br>
+                <br>
+            </c:if>
 
         <c:if test="${pesquisa.ema26 != null}">
             <h3 style="color: green">Gráfico Ema26</h3>
@@ -89,23 +97,6 @@
             <br>
             <br>
         </c:if>--%>
-
-        <c:if test="${pesquisa.candleStick != null}">
-            <h3 style="color: green">Gráfico CandleStick</h3>
-            <img src="../ABC-HB/grafico/candlebar/?sigla=${pesquisa.sigla}&dataInicial=<fmt:formatDate value="${pesquisa.dataInicial}" pattern="yyyy-MM-dd" />&dataFinal=<fmt:formatDate value="${pesquisa.dataFinal}" pattern="yyyy-MM-dd" />&historicoPreco=${pesquisa.historicoPreco}&ema9=${pesquisa.ema9}&ema12=${pesquisa.ema12}&ema26=${pesquisa.ema26}&candleStick=${pesquisa.candleStick}&macd=${pesquisa.macd}&ambiente=${pesquisa.ambiente}"" width="1300" height="500" alt="Se voce está vendo essa mensagem o grafico CandleStick de ${pesquisa.sigla} nao carregou"/>
-            <br>
-            <br>
-            <br>
-            <br>
-        </c:if>
-
-        <c:if test="${pesquisa.macd != null}">
-            <h3 style="color: green">Gráfico MACD</h3>
-            <img src="../ABC-HB/grafico/macd/?sigla=${pesquisa.sigla}&dataInicial=<fmt:formatDate value="${pesquisa.dataInicial}" pattern="yyyy-MM-dd" />&dataFinal=<fmt:formatDate value="${pesquisa.dataFinal}" pattern="yyyy-MM-dd" />&historicoPreco=${pesquisa.historicoPreco}&ema9=${pesquisa.ema9}&ema12=${pesquisa.ema12}&ema26=${pesquisa.ema26}&candleStick=${pesquisa.candleStick}&macd=${pesquisa.macd}&ambiente=${pesquisa.ambiente}"" width="1300" height="500" alt="Se voce está vendo essa mensagem o grafico MACD de ${pesquisa.sigla} nao carregou"/>
-            <br>
-            <br>
-            <br>
-            <br>
-        </c:if>
+        </center>
     </body>
 </html>

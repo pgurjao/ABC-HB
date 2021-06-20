@@ -63,10 +63,10 @@
                                 <label for="ema12">EMA 12</label><br>
                                 &nbsp;&nbsp;<input type="checkbox" id="ema26" name="ema26" value="ema26" checked>
                                 <label for="ema26">EMA 26</label><br>
-                                &nbsp;&nbsp;<input type="checkbox" id="candleStick" name="candleStick" value="candleStick" checked>
-                                <label for="candleStick">Candle Stick</label><br>
                                 &nbsp;&nbsp;<input type="checkbox" id="macd" name="macd" value="macd" checked>
-                                <label for="macd">MACD</label>
+                                <label for="macd">MACD</label><br>
+                                &nbsp;&nbsp;<input type="checkbox" id="candleStick" name="candleStick" value="candleStick" checked>
+                                <label for="candleStick">Candle Stick</label>
                                 &nbsp;&nbsp;</td>
                         </tr>
                         <tr>
