@@ -4,13 +4,11 @@ import br.edu.infnet.domain.Pesquisa;
 import java.io.ByteArrayOutputStream;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import br.edu.infnet.infra.GeradorDeGraficos;
-import java.awt.BorderLayout;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -91,12 +89,6 @@ public class GraficoController {
         } catch (NullPointerException e) {
             System.out.println("[obterGraficoCandleStick] NullPointerException -  pesquisa.Tostring) ");
         }
-        String criarGraficoCandleStick = "q";
-//        String criarGraficoCandleStick = pesquisa.getCandleStick();
-
-        if (criarGraficoCandleStick != null) {
-            System.out.println("[obterGraficoCandleStick] criarGraficoCandleStick = " + criarGraficoCandleStick);
-        }
 
         if (pesquisa == null) {
             return null;
@@ -110,7 +102,7 @@ public class GraficoController {
                 outputStream = gG.candleStick(pesquisa);
             } catch (Exception e) {
                 System.out.println("[obterGraficoCandleBar] Exception ao chamar candleStick");
-                e.printStackTrace();
+//                e.printStackTrace();
                 return null;
             }
             return outputStream.toByteArray();
@@ -140,7 +132,7 @@ public class GraficoController {
                 outputStream = gG.historicoPreco(pesquisa);
             } catch (Exception e) {
                 System.out.println("[obterGraficoHistoricoPreco] Exception ao chamar historicoPreco");
-                e.printStackTrace();
+//                e.printStackTrace();
                 return null;
             }
             return outputStream.toByteArray();
@@ -171,7 +163,7 @@ public class GraficoController {
                 outputStream = gG.macdChart(pesquisa);
             } catch (Exception e) {
                 System.out.println("[obterGraficoMacd] Exception ao chamar macdChart");
-                e.printStackTrace();
+//                e.printStackTrace();
                 return null;
             }
             return outputStream.toByteArray();
@@ -206,7 +198,7 @@ public class GraficoController {
                 outputStream = gG.ema9Chart(pesquisa);
             } catch (Exception e) {
                 System.out.println("[obterGraficoEma9] Exception ao chamar ema9Chart");
-                e.printStackTrace();
+//                e.printStackTrace();
                 return null;
             }
             return outputStream.toByteArray();
@@ -237,7 +229,7 @@ public class GraficoController {
                 outputStream = gG.ema26Chart(pesquisa);
             } catch (Exception e) {
                 System.out.println("[obterGraficoEma26] Exception ao chamar ema26Chart");
-                e.printStackTrace();
+//                e.printStackTrace();
                 return null;
             }
             return outputStream.toByteArray();
@@ -274,7 +266,7 @@ public class GraficoController {
                 outputStream = gG.ema12Chart(pesquisa);
             } catch (Exception e) {
                 System.out.println("[obterGraficoEma12] Exception ao chamar ema12Chart");
-                e.printStackTrace();
+//                e.printStackTrace();
                 return null;
             }
             return outputStream.toByteArray();

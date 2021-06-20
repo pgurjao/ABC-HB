@@ -19,16 +19,14 @@
         <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
     </head>
     <body style="margin: 10px">
-        <h1>Corretora ABC Homebroker</h1>
+        <h3><center>Corretora ABC Homebroker</center></h3>
         <hr>
         <br>
-        <center><h3>Bem vindo a Corretora ABC!</h3>
-            <br>
+        <center><h4>Bem vindo a Corretora ABC!</h4>
             <br>
             <c:if test="${not empty erro}">
                 <h4 style="color: red">ERRO: ${erro}</h4>
             </c:if>
-            <br>
             <br>
             <form action="exibirGrafico" method="post">
                 <table border="1" cellpadding="8" cellspacing="0">
@@ -47,16 +45,16 @@
                         </tr>
                         <tr>
                             <td height="35">&nbsp;&nbsp;<b>Data Inicial</b>&nbsp;&nbsp;&nbsp;</td>
-                            <td><center>&nbsp;&nbsp;<input type="date" name="dataInicial">&nbsp;&nbsp;</center></td>
+                            <td><center>&nbsp;&nbsp;<input type="date" name="dataInicial" min="2016-06-13">&nbsp;&nbsp;</center></td>
                         </tr>
                         <tr>
                             <td height="35">&nbsp;&nbsp;<b>Data Final</b></td>
-                            <td><center>&nbsp;&nbsp;<input type="date" name="dataFinal">&nbsp;&nbsp;</center></td>
+                            <td><center>&nbsp;&nbsp;<input type="date" name="dataFinal" max="2021-06-11">&nbsp;&nbsp;</center></td>
                         </tr>
                         <tr>
                             <td height="35">&nbsp;&nbsp;<b>Graficos</b></td>
                             <td>&nbsp;&nbsp;<input type="checkbox" id="historicoPreco" name="historicoPreco" value="historicoPreco" checked>
-                                <label for="historicoPreco">Histórico de preços</label><br>
+                                <label for="historicoPreco">Histórico de preços&nbsp;&nbsp;</label><br>
                                 &nbsp;&nbsp;<input type="checkbox" id="ema9" name="ema9" value="ema9" checked>
                                 <label for="ema9">EMA 9</label><br>
                                 &nbsp;&nbsp;<input type="checkbox" id="ema12" name="ema12" value="ema12" checked>
@@ -65,19 +63,20 @@
                                 <label for="ema26">EMA 26</label><br>
                                 &nbsp;&nbsp;<input type="checkbox" id="macd" name="macd" value="macd" checked>
                                 <label for="macd">MACD</label><br>
-                                &nbsp;&nbsp;<input type="checkbox" id="candleStick" name="candleStick" value="candleStick" checked>
+                                &nbsp;&nbsp;<input type="checkbox" id="candleStick" name="candleStick" value="candleStick">
                                 <label for="candleStick">Candle Stick</label>
                                 &nbsp;&nbsp;</td>
                         </tr>
-                        <tr>
-                            <td height="35">&nbsp;&nbsp;<b>Ambiente</b></td>
+                        <input type="hidden" name="ambiente" value="P">
+                        <%-- <tr>
+                             <td height="35">&nbsp;&nbsp;<b>Ambiente</b></td>
                             <td>&nbsp;&nbsp;<input type="radio" id="yahoo" name="ambiente" value="Y">Yahoo (1ano, com null)<br>
                                 &nbsp;&nbsp;<input type="radio" id="producao" name="ambiente" value="P">Produção (5 anos, com null)<br>
                                 &nbsp;&nbsp;<input type="radio" id="homologacao" name="ambiente" value="H">Homologação (2019-09, sem null)<br>
                                 &nbsp;&nbsp;<input type="radio" id="teste" name="ambiente" checked value="T">Teste (2021 em diante, sem null)&nbsp;&nbsp;<br>
                             </td>
 
-                        </tr>
+                        </tr> --%>
                         <tr>
                             <td colspan="2" height="55">
                                 <center><input type="reset">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
