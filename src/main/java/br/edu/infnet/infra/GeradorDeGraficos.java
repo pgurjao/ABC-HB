@@ -210,11 +210,8 @@ public class GeradorDeGraficos {
         // ADICIONA O PRIMEIRO DATASET E RENDERIZA COMO BARRAS
         CategoryItemRenderer macdRenderer = new LineAndShapeRenderer();
         
-// ADICIONA O PRIMEIRO DATASET E RENDERIZA COMO BARRAS
+        // ADICIONA O SEGUNDO DATASET E RENDERIZA COMO BARRAS
         CategoryItemRenderer signalRenderer = new LineAndShapeRenderer();
-
-// ADICIONA O PRIMEIRO DATASET E RENDERIZA COMO BARRAS
-//        CategoryItemRenderer signalRenderer = new LineAndShapeRenderer();
 
         // ADICIONA O SEGUNDO DATASET E RENDERIZA COMO LINHAS
         BarRenderer histogramRenderer = new BarRenderer();
@@ -254,7 +251,6 @@ public class GeradorDeGraficos {
                 macdDataset.addValue(macd[i], "MACD", df.format(date)); // ADICIONA AO 'DATASET' O VALOR DE macd[i] com a data na 'series' "MACD"
 //                defaultCategoryDataset.addValue(macd[i], "MACD", "2016-12-19");
             }
-            
 
             // CALCULA 'macd Signal Line'
             double[] macdSignalLine = new double[ema12.length];
@@ -268,7 +264,6 @@ public class GeradorDeGraficos {
                 Date date = new Date((long) dataset.getX(0, i)); // CONVERTE A DATA DO EIXO X DO 'DATASET' DE MILISEGUNDO PARA 'date'
                 signalDataset.addValue(macdSignalLine[i], "SIGNAL LINE", df.format(date)); // ADICIONA AO 'DATASET' O VALOR DE macd[i] com a data na 'series' "SIGNAL LINE"
             }
-            
 
             // CALCULA 'histograma' do MACD
             double[] dadosHistograma = new double[ema12.length];
@@ -281,9 +276,6 @@ public class GeradorDeGraficos {
                 Date date = new Date((long) dataset.getX(0, i)); // CONVERTE A DATA DO EIXO X DO 'DATASET' DE MILISEGUNDO PARA 'date'
                 histogramDataset.addValue(dadosHistograma[i], "HISTOGRAMA", df.format(date)); // ADICIONA AO 'DATASET' O VALOR DE macd[i] com a data na 'series' "SIGNAL LINE"
             }
-            
-            
-
         }
 
 //        XYPlot mainPlot = new XYPlot(timeTableXYDataset, domainAxis, rangeAxis, renderer);
@@ -299,7 +291,6 @@ public class GeradorDeGraficos {
 //        domainAxis.setDateFormatOverride(df);
         //Now create the chart and write PNG to OutputStream
 //        JFreeChart chart = new JFreeChart(tituloGrafico, null, mainPlot, true);
-
 
         plot.setDataset(0, macdDataset);
         plot.setRenderer(0, macdRenderer);
